@@ -335,7 +335,7 @@ header {
 #colorlib-progress,
 #colorlib-contact,
 #colorlib-about {
-  padding: 10em 0;
+  padding: 6em 0;
   clear: both;
   position: relative; }
   @media screen and (max-width: 768px) {
