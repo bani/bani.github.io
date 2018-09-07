@@ -34,13 +34,13 @@ body {
     overflow-y: hidden; }
 
 a {
-  color: #CA82F8;
+  color: #A16B80;
   -webkit-transition: 0.5s;
   -o-transition: 0.5s;
   transition: 0.5s; }
   a:hover {
     text-decoration: underline;
-    color: #CA82F8; }
+    color: #A16B80; }
   a:focus, a:active {
     outline: none; }
 
@@ -204,7 +204,7 @@ h1, h2, h3, h4, h5, h6 {
           outline: none;
           text-decoration: none; }
       #colorlib-main-nav ul li.active a {
-        color: #CA82F8; }
+        color: #A16B80; }
   #colorlib-main-nav .form-group {
     margin-bottom: 40px;
     position: relative;
@@ -238,7 +238,7 @@ h1, h2, h3, h4, h5, h6 {
     -moz-border-radius: 0;
     -ms-border-radius: 0;
     border-radius: 0;
-    background: #CA82F8;
+    background: #A16B80;
     color: #fff;
     border: none;
     padding: 16px; }
@@ -988,9 +988,9 @@ header {
     outline: none !important; }
 
 .btn-primary {
-  background: #CA82F8;
+  background: #A16B80;
   color: #fff;
-  border: 2px solid #CA82F8; }
+  border: 2px solid #A16B80; }
   .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     background: #d49af9 !important;
     border-color: #d49af9 !important; }
@@ -999,7 +999,7 @@ header {
     color: #4d4d4d;
     border: 1px solid #d9d9d9; }
     .btn-primary.btn-outline:hover, .btn-primary.btn-outline:focus, .btn-primary.btn-outline:active {
-      background: #CA82F8;
+      background: #A16B80;
       color: #fff; }
 
 .btn-success {
@@ -1229,7 +1229,7 @@ header {
       font-size: 16px;
       color: rgba(0, 0, 0, 0.5); }
     .contact-info li a {
-      color: #CA82F8; }
+      color: #A16B80; }
 
 .form-control {
   -webkit-box-shadow: none;
@@ -1261,7 +1261,7 @@ input[type="text"] {
 
 .colorlib-social-icons i {
   font-size: 24px;
-  color: #CA82F8; }
+  color: #BE96A6; }
 
 #footer {
   display: block;
@@ -1277,7 +1277,7 @@ input[type="text"] {
     text-decoration: none !important; }
   #footer p.colorlib-social-icons i {
     font-size: 24px;
-    color: #CA82F8; }
+    color: #A16B80; }
   #footer p .block {
     color: #1a1a1a;
     font-size: 14px; }
