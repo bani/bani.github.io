@@ -1,12 +1,12 @@
 $font-primary: 'Karla', Arial, sans-serif;
 $font-secondary: 'Playfair Display', Georgia, serif;
 // Overrides
-$grid-gutter-width: 40px !default; 
+$grid-gutter-width: 40px !default;
 $border-radius-base:  4px !default;
 $padding-base-vertical: 14px !default;
 
-$brand-primary: #CA82F8 !default;
-$brand-secondary: #FFE9E3 !default; 
+$brand-primary: #734d8b !default;
+$brand-secondary: #719cd4 !default;
 
 $brand-white: #fff;
 $brand-black: #000;
@@ -49,16 +49,16 @@ $form-group-margin-bottom: 30px !default;
           border-radius: $radius;
 }
 @mixin flex() {
-	display: -webkit-box;      
-  	display: -moz-box;         
-  	display: -ms-flexbox;      
-  	display: -webkit-flex;     
-  	display: flex;             
+	display: -webkit-box;
+  	display: -moz-box;
+  	display: -ms-flexbox;
+  	display: -webkit-flex;
+  	display: flex;
 }
 @mixin flexwrap() {
 	flex-wrap: wrap;
-	-webkit-flex-wrap: wrap; 
-	-moz-flex-wrap: wrap; 
+	-webkit-flex-wrap: wrap;
+	-moz-flex-wrap: wrap;
 }
 
 @font-face {
@@ -73,7 +73,7 @@ $form-group-margin-bottom: 30px !default;
 }
 
 @mixin icomoon() {
-	
+
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -85,10 +85,10 @@ $form-group-margin-bottom: 30px !default;
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	
+
 }
 
-// Import 
+// Import
 @import 'bootstrap/mixins';
 @import 'bootstrap/variables';
 
@@ -97,7 +97,7 @@ $form-group-margin-bottom: 30px !default;
 
 /* =======================================================
 *
-* 	Template Style 
+* 	Template Style
 *	Edit this section
 *
 * ======================================================= */
@@ -126,7 +126,7 @@ body {
 		height: 100%;
 		overflow-y: hidden;
 	}
-}	
+}
 a {
 	color: $brand-primary;
 	@include transition(.5s);
@@ -283,7 +283,7 @@ h1, h2, h3, h4, h5, h6 {
 		-ms-transform: scale(1.0);
 		-o-transform: scale(1.0);
 		transform: scale(1.0);
-	} 
+	}
 	ul {
 		// text-align: center;
 		padding: 0;
@@ -312,14 +312,14 @@ h1, h2, h3, h4, h5, h6 {
 					outline: none;
 					text-decoration: none;
 				}
-			}	
+			}
 			&.active{
 				a{
 					color: $brand-primary;
 				}
 			}
 		}
-		
+
 	}
 
 	//SEARCH
@@ -371,7 +371,7 @@ h1, h2, h3, h4, h5, h6 {
 		border: none;
 		border: 2px solid $brand-white;
 		background:$brand-white;
-		color: lighten($brand-black,20%) !important;	
+		color: lighten($brand-black,20%) !important;
 	}
 
 	//GALLERY
@@ -431,7 +431,7 @@ header{
 	position: absolute;
 	top: 0;
 	left: 0;
-	right: 0;	
+	right: 0;
 	z-index: 9;
 	margin: 0 auto;
 	@media screen and (max-width: $screen-sm) {
@@ -472,13 +472,13 @@ header{
 // #colorlib-instagram,
 #colorlib-services,
 #colorlib-contact,
-#colorlib-work, 
+#colorlib-work,
 #colorlib-blog,
 #colorlib-testimony,
 #colorlib-progress,
 #colorlib-contact,
 #colorlib-about{
-	padding: 10em 0;
+	padding: 8em 0;
 	clear: both;
 	position: relative;
 	@media screen and(max-width: $screen-sm){
@@ -822,9 +822,9 @@ header{
 			list-style: none;
 			margin-bottom: 10px;
 			&::before {
-				content: '\2022'; 
+				content: '\2022';
 				color: $brand-black;
-			   display: inline-block; 
+			   display: inline-block;
 			   width: 1em;
 			   margin-left: -1em;
 			}
@@ -1079,7 +1079,7 @@ header{
 
 //TESTIMONY
 #colorlib-testimony{
-	.owl-theme .owl-dots .owl-dot.active span, 
+	.owl-theme .owl-dots .owl-dot.active span,
 	.owl-theme .owl-dots .owl-dot:hover span{
 		height: 3px;
 		background: $brand-black;
@@ -1394,7 +1394,7 @@ header{
   		display: block;
   		top: 0px;
   	}
-  
+
 }
 
 
@@ -1428,7 +1428,7 @@ header{
 		a{
 			color: $brand-primary;
 		}
-		
+
 	}
 }
 .form-control {
@@ -1440,10 +1440,10 @@ header{
 	border: none;
 	border: transparent;
 	font-size: 16px;
-	
+
 	font-weight: 300;
 	@include border-radius(0px);
-	
+
 	&:focus, &:active {
 		box-shadow: none;
 		border: transparent;
@@ -1471,7 +1471,6 @@ input[type="text"] {
 
 // footer
 #footer{
-	padding: 8em 0;
 	display: block;
 	width: 100%;
 	// background: $brand-white;
@@ -1514,7 +1513,7 @@ input[type="text"] {
 			border: 1px solid rgba(0,0,0,.1);
 			font-size: 16px;
 			background: lighten($brand-black,98%);
-			font-weight: 400;			
+			font-weight: 400;
 			margin-bottom: 5px;
 			@include border-radius(30px);
 			&:focus, &:active {
