@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/bani
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://baniverso.com
+  * I am bani (https://keybase.io/bani) on keybase.
+  * I have a public key ASB6bQcID9mxh9UpeFkU4W-w1a4neKqar_glFpnhN64eTQo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0101bbb0cc6fdf6be6fc636f71c54cd68b0c89460943bf07ced58b36dc6445ab29da0a",
+      "host": "keybase.io",
+      "kid": "01207a6d07080fd9b187d529785914e16fb0d5ae2778aa9aaff8251699e137ae1e4d0a",
+      "uid": "584ed3332006e0a4d90a8be28771fd00",
+      "username": "bani"
+    },
+    "merkle_root": {
+      "ctime": 1576161869,
+      "hash": "2a476015ee31cf035c3f7aaa10bd5e0eafee47bfdc567d7564fc2526d7413bcfd496e897c8efc82777ad768bbe550f8e8a1300ede2a7a5f9adcd49ef71f9474a",
+      "hash_meta": "a86d3e11957a67360b37a48033eb6f56caa261d1a8db86c3928eea9e323af44a",
+      "seqno": 13417541
+    },
+    "service": {
+      "entropy": "90E4zjrMu0D5cbTIOhPyaZ/9",
+      "hostname": "baniverso.com",
+      "protocol": "http:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "5.1.1"
+  },
+  "ctime": 1576161878,
+  "expire_in": 504576000,
+  "prev": "72582083d416e1d6254aee648ce9f8c4e4e1e9cd882e2c67807fb602c935d7e1",
+  "seqno": 11,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgem0HCA/ZsYfVKXhZFOFvsNWuJ3iqmq/4JRaZ4TeuHk0Kp3BheWxvYWTESpcCC8Qgclggg9QW4dYlSu5kjOn4xOTh6c2ILixngH+2Ask11+HEICPtcebOXrk0S1MInFHJgsoKLdEk+4t5+lcnnkYS+0wxAgHCo3NpZ8RAWErUTTzl84RsxEedh2sIn35MPrxOCEoA3CrrETFVkCgbUG2/5Zf4ozA8AR+0opx4GFitsSwpi9tUMdwiS/EXBqhzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIJ/YQew6ruQSJihI5s3wxxS4ElX9Cn4KtwEdutvTArKjo3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/bani
+
+==================================================================
