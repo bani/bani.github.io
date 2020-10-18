@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <title>Altspace Multimedia Console</title>
+  </head>
+  <body>
+    <div class="mx-auto" style="width: 800px;">
+
+    <h1>Multimedia Console JSON file generator</h1>
+    <script>
+      function copyJSON() {
+        var copyText = document.getElementById("output");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+        document.execCommand("copy");
+        alert("JSON copied to clipboard!");
+      }
+
+      function generateJSON() {
+        var mediaList = document.getElementById("input").value;
+        mediaList = mediaList.replace(/(http:\/\/.*\.jpe?g)/gi, '    { "name": "", "imageUrl": "$1", "skipAfter": 0 },');
+        mediaList = mediaList.replace(/https:\/\/youtu.be\/(.+)/gi, '    { "name": "", "videoUrl": "https://www.youtube.com/watch?v=$1", "volume": 0.9, "rolloffStartDistance": 50, "endOfVideoAction": "play-next" },');
+        var template = `{
+  "loopMediaList": false,
+  "startMethod": "manual",
+  "controlMediaPlayer": "elevated",
+  "configureMediaPlayer": "owner",
+  "mediaList":
+  [
+${mediaList.slice(0, -1)}
+  ]
+}
+`;
+        document.getElementById("output").value = template;
+      }
+    </script>
+
+    <form>
+      <div class="form-group">
+        <label for="input">URLs</label>
+        <textarea class="form-control" id="input" rows="10">
+http://uofthenet.org/kmmb2/Title.jpg
+https://youtu.be/xl-QoMuk6Mg
+http://uofthenet.org/kmmb2/Map1.jpg
+http://uofthenet.org/kmmb2/Map2.jpg
+http://uofthenet.org/kmmb2/Arn5.jpeg
+http://uofthenet.org/kmmb2/Arn.jpg
+http://uofthenet.org/kmmb2/Bus.jpg
+http://uofthenet.org/kmmb2/50.jpg
+http://uofthenet.org/kmmb2/Seyma.jpg
+http://uofthenet.org/kmmb2/Song1.jpg
+http://uofthenet.org/kmmb2/31.jpg
+http://uofthenet.org/kmmb2/KN-Celebrate.jpg
+http://uofthenet.org/kmmb2/Kongnai.jpg
+https://youtu.be/POHDwKn1o3Q
+http://uofthenet.org/kmmb2/KongNai-KMMB.jpg
+http://uofthenet.org/kmmb2/KongNai-Kampot.jpg
+http://uofthenet.org/kmmb2/KongNai-Chapei.jpg
+https://youtu.be/cqYkwQdA9Ec
+http://uofthenet.org/kmmb2/34.jpg
+http://uofthenet.org/kmmb2/Scenic1.jpg
+http://uofthenet.org/kmmb2/Scenic2.jpg
+http://uofthenet.org/kmmb2/Scenic3.jpg
+http://uofthenet.org/kmmb2/Scenic4.JPG
+http://uofthenet.org/kmmb2/KG-Celebrate.jpg
+http://uofthenet.org/kmmb2/Students.jpeg
+http://uofthenet.org/kmmb2/KongGea.jpg
+http://uofthenet.org/kmmb2/Questions.jpg
+https://youtu.be/s5DYNuCANMs
+http://uofthenet.org/kmmb2/Title.jpg</textarea>
+      </div>
+      <button onclick="generateJSON(); return false;" class="btn btn-primary mb-2">Create JSON</button>
+
+      <div class="form-group">
+        <label for="output">JSON</label>
+        <textarea class="form-control" id="output" rows="10" placeholder="Click on Create JSON button above to generate the file" readonly></textarea>
+      </div>
+      <button onclick="copyJSON(); return false;" class="btn btn-primary mb-2">Copy JSON</button>
+    </form>
+    </div>
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+  </body>
+</html>
