@@ -104,10 +104,10 @@
 		owl.owlCarousel({
 			animateOut: 'fadeOut',
 		   animateIn: 'fadeIn',
-		   autoplay: true,
-		   loop:true,
+		   autoplay: false,
+		   loop:false,
 		   margin:0,
-		   nav:true,
+		   nav:false,
 		   dots: false,
 		   autoHeight: true,
 		   responsive:{
@@ -130,11 +130,11 @@
 		owl2.owlCarousel({
 			animateOut: 'fadeOut',
 		   animateIn: 'fadeIn',
-		   autoplay: true,
-		   loop:true,
+		   autoplay: false,
+		   loop:false,
 		   margin:0,
 		   nav:false,
-		   dots: true,
+		   dots: false,
 		   autoHeight: true,
 		   items: 1,
 		   navText: [
@@ -146,8 +146,8 @@
 		owl3.owlCarousel({
 			animateOut: 'fadeOut',
 		   animateIn: 'fadeIn',
-		   autoplay: true,
-		   loop:true,
+		   autoplay: false,
+		   loop:false,
 		   margin:0,
 		   nav:false,
 		   dots: false,
