@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<!-- 
+code from https://r.3v.fi/discord-timestamps/ 
+MIT licence, see https://github.com/3ventic/discord-timestamps
+-->
 
 <head>
 
@@ -24,7 +28,17 @@
         #code {
             font-family: monospace
         }
-        #current{width: 100%;}
+
+        #current {
+            width: 100%;
+        }
+
+        #credit {
+            margin-top: 25px;
+            font-size: 0.5em;
+            text-align: right;
+            width: 100%;
+        }
     </style>
 </head>
 
@@ -32,9 +46,7 @@
 
     <div class="container">
         <div class="row">
-            <div class="column">
-                <p>Enter your local time and copy to use on Discord</p>
-            </div>
+            <p>Enter your local time and copy to use on Discord</p>
         </div>
         <div class="row">
             <div class="column column-20"><span>Date</span></div>
@@ -60,13 +72,19 @@
             <div class="column column-20"><span>Display</span></div>
             <div class="column column-80"><span id="preview"></span></div>
         </div>
-        <div class="row"><p></p><p></p></div>
+        <div class="row">
+            <p></p>
+            <p></p>
+        </div>
         <div class="row">
             <div class="column"><input type="text" readonly id="code" title="Press Ctrl/Cmd+C to copy"></div>
             <div class="column"><button id="copy" class="button">Copy to clipboard</button></div>
         </div>
         <div class="row">
             <button id="current" class="button button-outline">Reset to current time</button>
+        </div>
+        <div class="row">
+            <p id="credit"><a href="https://github.com/3ventic/discord-timestamps">Code from 3ventic under MIT license</a></p>
         </div>
     </div>
 
