@@ -16,7 +16,7 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
     <link rel="stylesheet" href="../css/milligram.css">
 
 
-    <title>Discord Local Time</title>
+    <title>Discord Local Timestamp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         html {
@@ -38,6 +38,18 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
             font-size: 0.5em;
             text-align: right;
             width: 100%;
+        }
+        .info {
+            font-size: 0.82em;
+        }
+        .result {
+            font-weight: bold;
+            color: #9b4dca;
+            display: table;
+    margin: 0 auto;
+        }
+        .linebreak {
+            height: 5px;
         }
     </style>
 
@@ -67,7 +79,7 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
             <div class="column column-80"><input type="time" id="hm"></div>
         </div>
         <div class="row">
-            <div class="column column-20"><span>Type</span></div>
+            <div class="column column-20"><span>Format</span></div>
             <div class="column column-80"><select id="t">
                     <option value="t" selected>short time</option>
                     <option value="T">long time</option>
@@ -78,13 +90,15 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
                     <option value="R">relative</option>
                 </select></div>
         </div>
+
         <div class="row">
-            <div class="column column-20"><span>Display</span></div>
-            <div class="column column-80"><span id="preview"></span></div>
+            <div class="column"><span class="info">The code below will display in the user's local time as:</span></div>
         </div>
         <div class="row">
-            <p></p>
-            <p></p>
+            <div class="column"><span id="preview" class="result"></span></div>
+        </div>
+        <div class="row">
+            <p class="linebreak"></p>
         </div>
         <div class="row">
             <div class="column"><input type="text" readonly id="code" title="Press Ctrl/Cmd+C to copy"></div>
@@ -94,7 +108,7 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
             <button id="current" class="button button-outline">Reset to current time</button>
         </div>
         <div class="row">
-            <p id="credit"><a href="https://github.com/3ventic/discord-timestamps">Code from 3ventic under MIT license</a></p>
+            <p id="credit">Based on <a href="https://github.com/3ventic/discord-timestamps">code from 3ventic</a> under MIT license</p>
         </div>
     </div>
 
