@@ -14,7 +14,7 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
 
     <!-- Milligram CSS -->
     <link rel="stylesheet" href="../css/milligram.css">
-
+    <link rel="stylesheet" href="../css/dark.css" />
 
     <title>Discord Local Timestamp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,29 +39,33 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
             text-align: right;
             width: 100%;
         }
+
         .info {
             font-size: 0.82em;
         }
+
         .result {
             font-weight: bold;
-            color: #9b4dca;
+            font-size: 1.2em;
+            color: #b364e3;
             display: table;
-    margin: 0 auto;
+            margin: 0 auto;
         }
+
         .linebreak {
             height: 5px;
         }
     </style>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-  gtag('config', 'G-8WRXGV06E1');
-</script>
+        gtag('config', 'G-8WRXGV06E1');
+    </script>
 </head>
 
 <body>
@@ -108,7 +112,8 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
             <button id="current" class="button button-outline">Reset to current time</button>
         </div>
         <div class="row">
-            <p id="credit">Based on <a href="https://github.com/3ventic/discord-timestamps">code from 3ventic</a> under MIT license</p>
+            <p id="credit">Based on <a href="https://github.com/3ventic/discord-timestamps">code from 3ventic</a> under
+                MIT license</p>
         </div>
     </div>
 
