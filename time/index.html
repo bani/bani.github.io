@@ -131,11 +131,13 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
     timeInput.onchange = updateOutput;
     typeInput.onchange = updateOutput;
     output.onmouseover = function () { this.select(); }
+    copy.onmouseover = function () { updateOutput(); }
     copy.onclick = async () => {
         updateOutput();
+        
         try {
             await navigator.clipboard.writeText(output.value);
-            copy.textContent = '~~~ Copied! ~~~'
+            copy.textContent = '~~~ Copied! ~~~';
         } catch (e) {
             alert(e);
         }
