@@ -135,7 +135,7 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
         updateOutput();
         try {
             await navigator.clipboard.writeText(output.value);
-            alert("Successfully copied");
+            copy.textContent = '~~~ Copied! ~~~'
         } catch (e) {
             alert(e);
         }
@@ -196,5 +196,6 @@ MIT licence, see https://github.com/3ventic/discord-timestamps
             const formatter = new Intl.DateTimeFormat(navigator.language || 'en', typeFormats[typeInput.value] || {});
             preview.textContent = formatter.format(selectedDate);
         }
+        copy.textContent = 'Copy to clipboard'
     }
 </script>
