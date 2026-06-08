@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PJKT Fest Booth · Bani</title>
+  <meta name="description" content="VRChat event booth for the Love Letters to Sci-Fi community at PJKT Fest, built within strict real-time performance constraints.">
+  <meta name="author" content="Vanessa Sabino">
+
+  <link rel="shortcut icon" href="../../favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-8WRXGV06E1');
+  </script>
+</head>
+
+<body>
+
+  <main>
+    <div class="container">
+
+      <a href="../../" class="back-link">← Work &amp; Projects</a>
+
+      <div class="project-page">
+
+        <header class="project-header">
+          <div class="project-tags">
+            <span class="project-tag">Blender</span>
+            <span class="project-tag">Unity</span>
+            <span class="project-tag">VRChat</span>
+            <span class="project-tag">Event</span>
+          </div>
+          <h1 class="project-title">PJKT Fest Booth</h1>
+          <p class="project-year">2026</p>
+        </header>
+
+        <div class="img-placeholder hero">Main render coming soon</div>
+
+        <div class="project-body">
+          <div class="project-description">
+            <p>PJKT Fest is an annual virtual festival hosted in VRChat by Projekt: Community, celebrating the creativity and culture of social VR. I designed the booth for a community called "Love Letters to Sci-Fi," with a brief to make the interior feel like the Star Trek holodeck.</p>
+            <p>The concept extended the brief into a full architectural piece. The interior follows the holodeck grid aesthetic, while the exterior takes its cues from the corridors of the Enterprise-D. A galaxy-inspired rounded dome sits on top, adding height and giving the building a more distinctive presence on the festival floor. Inside, the booth features a pile of tribbles and a blue planet with a miniature Enterprise orbiting it. The logo on the side of the booth is original lettering, designed in Procreate for the community's visual identity.</p>
+            <p>The most significant challenge was the technical spec. The booth was limited to 4 meshes, 4 material slots, and 50,000 triangles. Each element has its own material: the booth structure, the tribbles, and the Enterprise. The booth structure material was the most complex to work out. The textures are Quest-compatible, meaning each PBR layer is limited to a 1024x1024 PNG: albedo, metallic/smoothness, normal maps, and emission were all created manually. Fitting the entire booth structure's UVs into that resolution budget meant careful unwrapping and deliberate decisions about which surfaces could afford lower resolution without visibly losing quality.</p>
+            <p>Designing for VRChat performance specs is a different discipline from designing for a render. The constraints are hard limits, and the creative work has to happen within them.</p>
+          </div>
+          <aside class="project-meta">
+            <div class="meta-item">
+              <p class="meta-label">Tools</p>
+              <p class="meta-value">Blender, Unity, VRChat SDK</p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Event</p>
+              <p class="meta-value">PJKT Fest by Projekt: Community</p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Community</p>
+              <p class="meta-value">Love Letters to Sci-Fi</p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Year</p>
+              <p class="meta-value">2026</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="project-gallery">
+          <div class="img-placeholder thumb"></div>
+          <div class="img-placeholder thumb"></div>
+          <div class="img-placeholder thumb"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; <script>document.write(new Date().getFullYear())</script> Vanessa Sabino</p>
+    </div>
+  </footer>
+
+</body>
+</html>
