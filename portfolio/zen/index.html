@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zen Garden World · Bani</title>
+  <meta name="description" content="A walled Japanese zen garden world for VRChat, built procedurally in Blender with fully generated textures and an AI-assisted pipeline.">
+  <meta name="author" content="Vanessa Sabino">
+
+  <link rel="shortcut icon" href="../../favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-8WRXGV06E1');
+  </script>
+</head>
+
+<body>
+
+  <main>
+    <div class="container">
+
+      <a href="../../" class="back-link">← Work &amp; Projects</a>
+
+      <div class="project-page">
+
+        <header class="project-header">
+          <div class="project-tags">
+            <span class="project-tag">Blender</span>
+            <span class="project-tag">Procedural</span>
+            <span class="project-tag">VRChat</span>
+            <span class="project-tag">Environment</span>
+          </div>
+          <h1 class="project-title">Zen Garden World</h1>
+          <p class="project-year">2026</p>
+        </header>
+
+        <div class="project-hero">
+          <img src="hero.png" alt="Overhead view of a walled Japanese zen garden with a worship hall, koi pond and dry rock garden" width="1920" height="1080">
+        </div>
+
+        <div class="project-body">
+          <div class="project-description">
+            <p>Garden of Stillness is a walled Japanese Zen garden built as a VRChat world. Inside the perimeter you'll find a small temple with a curved tiled roof, a dry garden with raked sand, a koi pond crossed by an arched wooden bridge, stone lanterns, and various trees.</p>
+            <p>The whole scene was built procedurally with Claude rather than hand-modelled piece by piece. Every surface, from the wood and stone to the sand, moss, water and foliage, comes from textures generated with Python scripts in Blender's node system instead of photographic sources. That meant designing each material as a small generator: control over tiling, scale, colour and wear was baked into the script itself, and the same generators could be re-run to retexture the whole garden in a different mood without touching a single UV.</p>
+            <p>Performance stayed Quest-friendly throughout: the detailed version lands at roughly 113,000 triangles, normal maps were downscaled to 512 pixels with no visible loss, and the shoji paper uses baked emission rather than a translucency shader so the lit-from-within glow works identically on PC and Quest.</p>
+          </div>
+          <aside class="project-meta">
+            <div class="meta-item">
+              <p class="meta-label">VRChat World</p>
+              <p class="meta-value"><a href="https://vrchat.com/home/launch?worldId=wrld_5aa365ec-1242-4a35-924f-f4d6e7934a4d" target="_blank" rel="noopener">Visit in VRChat ↗</a></p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Tools</p>
+              <p class="meta-value">Blender, Python, Unity, VRChat SDK</p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Type</p>
+              <p class="meta-value">VRChat World</p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Triangles</p>
+              <p class="meta-value">~113k (250k budget)</p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Year</p>
+              <p class="meta-value">2026</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="project-gallery">
+          <img src="detail-1.png" alt="Karesansui dry garden with raked sand, boulders and stone lanterns at dusk" width="800" height="600">
+          <img src="detail-2.png" alt="Koi pond with an arched wooden bridge and blossoming sakura trees" width="800" height="600">
+          <img src="detail-3.png" alt="Temple with glowing shoji walls and lanterns at dusk" width="800" height="600">
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; <script>document.write(new Date().getFullYear())</script> Vanessa Sabino</p>
+    </div>
+  </footer>
+
+</body>
+</html>
