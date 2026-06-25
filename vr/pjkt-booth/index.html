@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Holobooth — WebXR Walkthrough</title>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+
+    <!-- Rescale glTF lights (Blender exports physical lux/candela -> would white-out) -->
+    <script>
+      AFRAME.registerComponent('fix-gltf-lights', {
+        schema: { sun: { default: 2.0 }, pointScale: { default: 0.0035 } },
+        init: function () {
+          var self = this;
+          this.el.addEventListener('model-loaded', function (e) {
+            e.detail.model.traverse(function (o) {
+              if (!o.isLight) return;
+              if (o.isDirectionalLight) { o.intensity = self.data.sun; o.castShadow = false; }
+              else if (o.isPointLight || o.isSpotLight) { o.intensity *= self.data.pointScale; o.castShadow = false; }
+            });
+          });
+        }
+      });
+    </script>
+
+    <!-- Force effectively-opaque "Alpha Hashed" materials back to solid (e.g. the sign) -->
+    <script>
+      AFRAME.registerComponent('fix-materials', {
+        init: function () {
+          this.el.addEventListener('model-loaded', function (e) {
+            var seen = new Set();
+            e.detail.model.traverse(function (o) {
+              if (!o.isMesh || !o.material) return;
+              (Array.isArray(o.material) ? o.material : [o.material]).forEach(function (m) {
+                if (!m || seen.has(m.uuid)) return; seen.add(m.uuid);
+                if (typeof m.transmission === 'number' && m.transmission > 0 && m.transmission < 0.9) m.transmission = 0;
+                var isGlass = (typeof m.transmission === 'number' && m.transmission >= 0.9);
+                if (!isGlass && m.transparent && m.opacity >= 0.98 && !m.alphaMap) { m.transparent = false; m.depthWrite = true; }
+                m.needsUpdate = true;
+              });
+            });
+          });
+        }
+      });
+    </script>
+
+    <!-- Subtle dark-space gradient skydome -->
+    <script>
+      AFRAME.registerComponent('gradient-sky', {
+        schema: { top:{type:'color',default:'#03050d'}, middle:{type:'color',default:'#070c1c'},
+                  bottom:{type:'color',default:'#0c1230'}, midPoint:{default:0.5}, exponent:{default:0.9}, radius:{default:600} },
+        init: function () {
+          var d = this.data;
+          var mat = new THREE.ShaderMaterial({
+            side: THREE.BackSide, depthWrite: false, fog: false, toneMapped: false,
+            uniforms: { topColor:{value:new THREE.Color(d.top)}, midColor:{value:new THREE.Color(d.middle)},
+                        botColor:{value:new THREE.Color(d.bottom)}, midPoint:{value:d.midPoint}, exponent:{value:d.exponent} },
+            vertexShader: 'varying vec3 vP; void main(){ vP=normalize(position); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+            fragmentShader: ['uniform vec3 topColor,midColor,botColor; uniform float midPoint,exponent; varying vec3 vP;',
+              'void main(){ float h=clamp(vP.y*0.5+0.5,0.0,1.0); vec3 c;',
+              ' if(h<midPoint) c=mix(botColor,midColor,pow(h/midPoint,exponent));',
+              ' else c=mix(midColor,topColor,pow((h-midPoint)/(1.0-midPoint),exponent));',
+              ' gl_FragColor=vec4(c,1.0);}'].join('\n')
+          });
+          var mesh = new THREE.Mesh(new THREE.SphereGeometry(d.radius,32,16), mat); mesh.frustumCulled=false;
+          this.el.setObject3D('mesh', mesh);
+        },
+        remove: function () { this.el.removeObject3D('mesh'); }
+      });
+    </script>
+
+    <!-- On-screen joystick for phones (inert on desktop) -->
+    <script>
+      AFRAME.registerComponent('touch-move', {
+        schema: { speed: { default: 2.2 }, cameraEl: { type: 'selector', default: '#camera' } },
+        init: function () {
+          this.vec = { x: 0, y: 0 }; this.dragging = false;
+          this._fwd = new THREE.Vector3(); this._right = new THREE.Vector3(); this._q = new THREE.Quaternion();
+          if (!(('ontouchstart' in window) || navigator.maxTouchPoints > 0)) return;
+          var base = document.createElement('div'); base.className = 'tm-joy-base';
+          var thumb = document.createElement('div'); thumb.className = 'tm-joy-thumb';
+          base.appendChild(thumb); document.body.appendChild(base); this.base = base;
+          var self = this, radius = 55;
+          function setFromTouch(t) {
+            var r = base.getBoundingClientRect();
+            var dx = t.clientX - (r.left + r.width / 2), dy = t.clientY - (r.top + r.height / 2);
+            var c = Math.min(Math.hypot(dx, dy), radius), a = Math.atan2(dy, dx);
+            var tx = Math.cos(a) * c, ty = Math.sin(a) * c;
+            thumb.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
+            self.vec.x = tx / radius; self.vec.y = -ty / radius;
+          }
+          function reset() { self.dragging = false; self.vec.x = 0; self.vec.y = 0; thumb.style.transform = 'translate(0,0)'; }
+          base.addEventListener('touchstart', function (e) { self.dragging = true; setFromTouch(e.changedTouches[0]); e.preventDefault(); e.stopPropagation(); }, { passive: false });
+          base.addEventListener('touchmove', function (e) { if (self.dragging) { setFromTouch(e.changedTouches[0]); e.preventDefault(); e.stopPropagation(); } }, { passive: false });
+          base.addEventListener('touchend', function (e) { reset(); e.preventDefault(); e.stopPropagation(); }, { passive: false });
+          base.addEventListener('touchcancel', reset, { passive: false });
+          this.el.sceneEl.addEventListener('enter-vr', function () { base.style.display = 'none'; });
+          this.el.sceneEl.addEventListener('exit-vr', function () { base.style.display = 'flex'; });
+        },
+        tick: function (time, dt) {
+          if (!this.dragging || (this.vec.x === 0 && this.vec.y === 0)) return;
+          var cam = this.data.cameraEl; if (!cam) return;
+          cam.object3D.getWorldQuaternion(this._q);
+          this._fwd.set(0, 0, -1).applyQuaternion(this._q); this._fwd.y = 0; this._fwd.normalize();
+          this._right.set(1, 0, 0).applyQuaternion(this._q); this._right.y = 0; this._right.normalize();
+          var d = this.data.speed * (dt / 1000), p = this.el.object3D.position;
+          p.addScaledVector(this._fwd, this.vec.y * d); p.addScaledVector(this._right, this.vec.x * d);
+        },
+        remove: function () { if (this.base && this.base.parentNode) this.base.parentNode.removeChild(this.base); }
+      });
+    </script>
+
+    <style>
+      html,body{margin:0;height:100%;background:#03050d}
+      #help{position:fixed;left:12px;bottom:12px;z-index:9999;max-width:340px;padding:12px 14px;
+        border-radius:10px;background:rgba(8,12,28,.72);color:#cdd6f0;
+        font:13px/1.5 system-ui,sans-serif;border:1px solid rgba(90,120,200,.35);
+        backdrop-filter:blur(6px);pointer-events:none}
+      .tm-joy-base { position: fixed; left: 22px; bottom: 22px; width: 120px; height: 120px;
+        border-radius: 50%; z-index: 10000; background: rgba(14,18,40,.45);
+        border: 2px solid rgba(90,120,200,.5); display: flex; align-items: center;
+        justify-content: center; touch-action: none; user-select: none; -webkit-user-select: none; }
+      .tm-joy-thumb { width: 54px; height: 54px; border-radius: 50%;
+        background: rgba(87,180,230,.7); box-shadow: 0 0 14px rgba(87,180,230,.6); pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <div id="help">Desktop: WASD + drag to look. Phone: drag to look, joystick to move. VR: Enter VR, point at floor, pull trigger to teleport.</div>
+    <a-scene
+      background="color: #05080f"
+      fog="type: exponential; color: #05080f; density: 0.012"
+      renderer="colorManagement: true; toneMapping: ACESFilmic; exposure: 1.0; antialias: true; sortTransparentObjects: true"
+      loading-screen="backgroundColor: #05080f; dotsColor: #57b4e6">
+
+      <a-assets>
+        <a-asset-item id="model" src="model.glb"></a-asset-item>
+      </a-assets>
+
+      <a-entity gradient-sky></a-entity>
+
+      <!-- Fill lighting to replace the dropped area lights (cool, low so emitters keep their glow) -->
+      <a-entity light="type: ambient; color: #25304f; intensity: 0.4"></a-entity>
+      <a-entity light="type: hemisphere; color: #44587e; groundColor: #0a0a16; intensity: 0.55"></a-entity>
+
+      <a-entity gltf-model="#model" position="0 0 0" fix-gltf-lights fix-materials></a-entity>
+
+      <!-- Invisible teleport target covering the walkable footprint -->
+      <a-circle class="teleport-floor" radius="14" rotation="-90 0 0" position="0 0.02 0"
+                material="shader: flat; opacity: 0; transparent: true"></a-circle>
+
+      <!-- Spawn matches the Blender Exterior_Dome_Cam position/facing (outside, looking toward the booth at -Z),
+           but at human eye height (1.6 m) so you can comfortably walk through the door. -->
+      <a-entity id="rig" position="-0.259 0 13.293" touch-move="speed: 2.2">
+        <a-entity id="camera" camera position="0 1.6 0"
+                  look-controls="pointerLockEnabled: false"
+                  wasd-controls="acceleration: 25; fly: false"></a-entity>
+        <a-entity laser-controls="hand: left"  raycaster="objects: .teleport-floor; far: 40"
+                  blink-controls="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleport-floor"></a-entity>
+        <a-entity laser-controls="hand: right" raycaster="objects: .teleport-floor; far: 40"
+                  blink-controls="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleport-floor"></a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
