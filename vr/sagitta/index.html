@@ -11,6 +11,86 @@
     <!-- VR teleport locomotion (blink-style) -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
 
+    <!-- Self-contained on-screen joystick for mobile/touch walking (no external deps).
+         Moves the rig relative to where the camera is looking. Registered before the
+         scene parses, so the entity picks it up. Inert on non-touch devices. -->
+    <script>
+      AFRAME.registerComponent('touch-move', {
+        schema: {
+          speed: { default: 2.2 },                 // metres per second
+          cameraEl: { type: 'selector', default: '#camera' }
+        },
+        init: function () {
+          this.vec = { x: 0, y: 0 };               // joystick output (x=strafe, y=forward)
+          this.dragging = false;
+          this._fwd = new THREE.Vector3();
+          this._right = new THREE.Vector3();
+          this._q = new THREE.Quaternion();
+
+          var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+          if (!isTouch) return;                    // desktop keeps WASD; no joystick shown
+
+          var base = document.createElement('div');
+          base.className = 'tm-joy-base';
+          var thumb = document.createElement('div');
+          thumb.className = 'tm-joy-thumb';
+          base.appendChild(thumb);
+          document.body.appendChild(base);
+          this.base = base;
+
+          var self = this;
+          var radius = 55;                          // px travel; base is 120px wide
+
+          function setFromTouch(t) {
+            var r = base.getBoundingClientRect();
+            var dx = t.clientX - (r.left + r.width / 2);
+            var dy = t.clientY - (r.top + r.height / 2);
+            var clamped = Math.min(Math.hypot(dx, dy), radius);
+            var ang = Math.atan2(dy, dx);
+            var tx = Math.cos(ang) * clamped;
+            var ty = Math.sin(ang) * clamped;
+            thumb.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
+            self.vec.x = tx / radius;               // right
+            self.vec.y = -ty / radius;              // screen-up = forward
+          }
+          function reset() {
+            self.dragging = false; self.vec.x = 0; self.vec.y = 0;
+            thumb.style.transform = 'translate(0,0)';
+          }
+          // stopPropagation keeps these touches away from look-controls (which would
+          // otherwise also rotate the view). Look/steer still works via other touches + gyro.
+          base.addEventListener('touchstart', function (e) {
+            self.dragging = true; setFromTouch(e.changedTouches[0]);
+            e.preventDefault(); e.stopPropagation();
+          }, { passive: false });
+          base.addEventListener('touchmove', function (e) {
+            if (self.dragging) { setFromTouch(e.changedTouches[0]); e.preventDefault(); e.stopPropagation(); }
+          }, { passive: false });
+          base.addEventListener('touchend', function (e) { reset(); e.preventDefault(); e.stopPropagation(); }, { passive: false });
+          base.addEventListener('touchcancel', reset, { passive: false });
+
+          // Hide the pad in VR (controllers handle locomotion there)
+          this.el.sceneEl.addEventListener('enter-vr', function () { base.style.display = 'none'; });
+          this.el.sceneEl.addEventListener('exit-vr', function () { base.style.display = 'flex'; });
+        },
+        tick: function (time, dt) {
+          if (!this.dragging || (this.vec.x === 0 && this.vec.y === 0)) return;
+          var cam = this.data.cameraEl;
+          if (!cam) return;
+          cam.object3D.getWorldQuaternion(this._q);
+          this._fwd.set(0, 0, -1).applyQuaternion(this._q); this._fwd.y = 0; this._fwd.normalize();
+          this._right.set(1, 0, 0).applyQuaternion(this._q); this._right.y = 0; this._right.normalize();
+          var d = this.data.speed * (dt / 1000);
+          var p = this.el.object3D.position;
+          p.addScaledVector(this._fwd, this.vec.y * d);
+          p.addScaledVector(this._right, this.vec.x * d);
+        },
+        remove: function () {
+          if (this.base && this.base.parentNode) this.base.parentNode.removeChild(this.base);
+        }
+      });
+    </script>
+
     <style>
       html, body { margin: 0; height: 100%; background: #0a0714; }
 
@@ -29,12 +109,27 @@
         padding: 0 5px; font-family: ui-monospace, monospace; color: #efeaff;
       }
       .a-enter-vr-button { background-color: #1b1230; }
+
+      /* On-screen joystick (created by the touch-move component on touch devices) */
+      .tm-joy-base {
+        position: fixed; left: 22px; bottom: 22px; width: 120px; height: 120px;
+        border-radius: 50%; z-index: 10000;
+        background: rgba(20, 14, 38, 0.45); border: 2px solid rgba(120, 90, 200, 0.5);
+        display: flex; align-items: center; justify-content: center;
+        touch-action: none; -webkit-user-select: none; user-select: none;
+      }
+      .tm-joy-thumb {
+        width: 54px; height: 54px; border-radius: 50%;
+        background: rgba(87, 230, 216, 0.7); box-shadow: 0 0 14px rgba(87, 230, 216, 0.6);
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
     <div id="help">
       <b>Sagitta Station</b><br />
       Desktop: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move, drag mouse to look.<br />
+      Mobile: <b>joystick</b> (bottom-left) to walk, move the phone or drag to look.<br />
       VR: press <b>Enter VR</b> (bottom-right), point a controller at the floor and pull the
       <b>trigger</b> to teleport.
     </div>
@@ -69,7 +164,7 @@
 
       <!-- Player rig: teleport moves this; camera sits at eye height.
            Spawn = Blender camera location (0, 0, 1.7) -> A-Frame (0, 0, 0) at origin. -->
-      <a-entity id="rig" position="0 0 0">
+      <a-entity id="rig" position="0 0 0" touch-move="speed: 2.2">
         <a-entity
           id="camera"
           camera
