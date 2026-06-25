@@ -156,8 +156,11 @@
 
       <!-- Spawn: Blender (0, -22, eye) = just south of the torii (Y=-19), on the court paving,
            facing +Y toward the temple. Blender +Y maps to A-Frame -Z, which is the camera's
-           default forward, so no rig rotation is needed. -->
-      <a-entity id="rig" position="0 0 22" touch-move="speed: 2.6">
+           default forward, so no rig rotation is needed.
+           rig.y = 0.9 lifts the eye to ~2.5 m (0.9 + 1.6 camera child) for an elevated tour
+           view on desktop/mobile. In VR a teleport resets the rig to the floor, so headset
+           users return to natural standing height. -->
+      <a-entity id="rig" position="0 0.9 22" touch-move="speed: 2.6">
         <a-entity id="camera" camera position="0 1.6 0"
                   look-controls="pointerLockEnabled: false"
                   wasd-controls="acceleration: 28; fly: false"></a-entity>
