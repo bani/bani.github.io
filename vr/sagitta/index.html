@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Sagitta Station — WebXR</title>
+    <meta name="description" content="Walkable WebXR tour of Sagitta Station." />
+
+    <!-- A-Frame: WebXR framework built on three.js -->
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <!-- VR teleport locomotion (blink-style) -->
+    <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+
+    <style>
+      html, body { margin: 0; height: 100%; background: #0a0714; }
+
+      /* Lightweight on-screen help, hidden once in VR */
+      #help {
+        position: fixed; left: 12px; bottom: 12px; z-index: 9999;
+        max-width: 340px; padding: 12px 14px; border-radius: 10px;
+        background: rgba(12, 8, 24, 0.72); color: #d9d2ee;
+        font: 13px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        border: 1px solid rgba(120, 90, 200, 0.35);
+        backdrop-filter: blur(6px); pointer-events: none;
+      }
+      #help b { color: #57e6d8; }
+      #help kbd {
+        background: #241a3a; border: 1px solid #3a2c5c; border-radius: 4px;
+        padding: 0 5px; font-family: ui-monospace, monospace; color: #efeaff;
+      }
+      .a-enter-vr-button { background-color: #1b1230; }
+    </style>
+  </head>
+  <body>
+    <div id="help">
+      <b>Sagitta Station</b><br />
+      Desktop: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move, drag mouse to look.<br />
+      VR: press <b>Enter VR</b> (bottom-right), point a controller at the floor and pull the
+      <b>trigger</b> to teleport.
+    </div>
+
+    <a-scene
+      background="color: #0a0714"
+      fog="type: exponential; color: #0a0714; density: 0.018"
+      renderer="colorManagement: true; toneMapping: ACESFilmic; exposure: 1.0; antialias: true; sortTransparentObjects: true"
+      vr-mode-ui="enterVRButton: true"
+      loading-screen="backgroundColor: #0a0714; dotsColor: #57e6d8">
+
+      <a-assets>
+        <a-asset-item id="station" src="SagittaStation.glb"></a-asset-item>
+      </a-assets>
+
+      <!-- The exported model already contains its 49 point lights + emissive neon.
+           A subtle ambient fill lifts pure-black areas and disables A-Frame's
+           default directional/ambient lights (which would flatten the mood). -->
+      <a-entity light="type: ambient; color: #2a2440; intensity: 0.35"></a-entity>
+
+      <!-- Sagitta Station -->
+      <a-entity gltf-model="#station" position="0 0 0"></a-entity>
+
+      <!-- Invisible floor used as the teleport target (station radius ~12.5 m).
+           Kept visible:true with opacity 0 so the teleport raycaster still hits it. -->
+      <a-circle
+        class="teleport-floor"
+        radius="13"
+        rotation="-90 0 0"
+        position="0 0.02 0"
+        material="shader: flat; opacity: 0; transparent: true"></a-circle>
+
+      <!-- Player rig: teleport moves this; camera sits at eye height.
+           Spawn = Blender camera location (0, 0, 1.7) -> A-Frame (0, 0, 0) at origin. -->
+      <a-entity id="rig" position="0 0 0">
+        <a-entity
+          id="camera"
+          camera
+          position="0 1.6 0"
+          look-controls="pointerLockEnabled: false"
+          wasd-controls="acceleration: 25; fly: false"></a-entity>
+
+        <!-- VR controllers: laser pointer + blink teleport on trigger -->
+        <a-entity
+          id="leftHand"
+          laser-controls="hand: left"
+          raycaster="objects: .teleport-floor; far: 30"
+          blink-controls="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleport-floor; snapTurn: true; rotateOnTeleport: false"></a-entity>
+        <a-entity
+          id="rightHand"
+          laser-controls="hand: right"
+          raycaster="objects: .teleport-floor; far: 30"
+          blink-controls="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleport-floor; snapTurn: true; rotateOnTeleport: false"></a-entity>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      // Hide the help card once the user enters VR.
+      const scene = document.querySelector('a-scene');
+      const help = document.getElementById('help');
+      scene.addEventListener('enter-vr', () => (help.style.display = 'none'));
+      scene.addEventListener('exit-vr', () => (help.style.display = ''));
+    </script>
+  </body>
+</html>
