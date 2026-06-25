@@ -7,6 +7,69 @@
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
 
+    <!-- Blender exports light energy in physical photometric units (sun=683 lux,
+         lanterns=2989/8152 cd). three.js renders those literally, so ACES clips the
+         whole scene to white. Rescale the imported lights to sane real-time values. -->
+    <script>
+    AFRAME.registerComponent('fix-gltf-lights', {
+      schema: { sun: { default: 3.0 }, pointScale: { default: 0.0035 } },
+      init: function () {
+        var self = this;
+        this.el.addEventListener('model-loaded', function (e) {
+          var n = 0;
+          e.detail.model.traverse(function (o) {
+            if (!o.isLight) return; n++;
+            if (o.isDirectionalLight) { o.intensity = self.data.sun; }
+            else if (o.isPointLight || o.isSpotLight) { o.intensity *= self.data.pointScale; o.castShadow = false; }
+          });
+          console.log('[fix-gltf-lights] rescaled ' + n + ' imported lights');
+        });
+      }
+    });
+
+    // Sunset gradient sky: a back-side sphere with a 3-stop vertical gradient.
+    // toneMapped:false keeps the colors vivid no matter the renderer exposure.
+    AFRAME.registerComponent('gradient-sky', {
+      schema: {
+        top:    { type: 'color', default: '#1b2a5e' },
+        middle: { type: 'color', default: '#c25f7d' },
+        bottom: { type: 'color', default: '#ffae5c' },
+        midPoint: { default: 0.46 },
+        exponent: { default: 0.85 },
+        radius:   { default: 600 }
+      },
+      init: function () {
+        var d = this.data;
+        var uniforms = {
+          topColor: { value: new THREE.Color(d.top) },
+          midColor: { value: new THREE.Color(d.middle) },
+          botColor: { value: new THREE.Color(d.bottom) },
+          midPoint: { value: d.midPoint },
+          exponent: { value: d.exponent }
+        };
+        var mat = new THREE.ShaderMaterial({
+          side: THREE.BackSide, depthWrite: false, fog: false, toneMapped: false, uniforms: uniforms,
+          vertexShader: 'varying vec3 vPos; void main(){ vPos = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+          fragmentShader: [
+            'uniform vec3 topColor; uniform vec3 midColor; uniform vec3 botColor;',
+            'uniform float midPoint; uniform float exponent; varying vec3 vPos;',
+            'void main(){',
+            '  float h = clamp(vPos.y * 0.5 + 0.5, 0.0, 1.0);',
+            '  vec3 col;',
+            '  if (h < midPoint) { col = mix(botColor, midColor, pow(h / midPoint, exponent)); }',
+            '  else { col = mix(midColor, topColor, pow((h - midPoint) / (1.0 - midPoint), exponent)); }',
+            '  gl_FragColor = vec4(col, 1.0);',
+            '}'
+          ].join('\n')
+        });
+        var mesh = new THREE.Mesh(new THREE.SphereGeometry(d.radius, 32, 16), mat);
+        mesh.frustumCulled = false;
+        this.el.setObject3D('mesh', mesh);
+      },
+      remove: function () { this.el.removeObject3D('mesh'); }
+    });
+    </script>
+
     <!-- On-screen joystick for phones (inert on desktop / in VR). Registers before the scene parses. -->
     <script>
     AFRAME.registerComponent('touch-move', {
@@ -49,7 +112,7 @@
     </script>
 
     <style>
-      html,body{margin:0;height:100%;background:#caa276}
+      html,body{margin:0;height:100%;background:#1b2a5e}
       #help{position:fixed;left:12px;bottom:12px;z-index:9999;max-width:340px;padding:12px 14px;
         border-radius:10px;background:rgba(40,26,14,.72);color:#f3e7d4;
         font:13px/1.5 system-ui,sans-serif;border:1px solid rgba(200,150,90,.4);
@@ -66,21 +129,25 @@
     <div id="help">Desktop: WASD + drag to look. Phone: drag the joystick to walk, drag the screen to look. VR: Enter VR, point at the ground, pull the trigger to teleport.</div>
 
     <a-scene
-      background="color: #caa276"
-      fog="type: exponential; color: #caa276; density: 0.011"
+      background="color: #1b2a5e"
+      fog="type: exponential; color: #d79a6a; density: 0.006"
       renderer="colorManagement: true; toneMapping: ACESFilmic; exposure: 1.0; antialias: true; sortTransparentObjects: true"
-      loading-screen="backgroundColor: #caa276; dotsColor: #5a3c1e">
+      loading-screen="backgroundColor: #1b2a5e; dotsColor: #ffae5c">
 
       <a-assets>
         <a-asset-item id="model" src="zen_garden_webxr.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Adding our own lights disables A-Frame's default directional+ambient.
-           The GLB carries its own Sun + 16 lantern point lights (KHR_lights_punctual);
-           this hemisphere fill just lifts the shadows so nothing reads pure black. -->
-      <a-entity light="type: hemisphere; color: #e7c9a0; groundColor: #2a2418; intensity: 0.55"></a-entity>
+      <!-- Sunset gradient skydome (indigo zenith -> rose -> warm horizon). -->
+      <a-entity gradient-sky></a-entity>
 
-      <a-entity gltf-model="#model" position="0 0 0"></a-entity>
+      <!-- Adding our own lights disables A-Frame's default directional+ambient.
+           The GLB carries its own Sun + 16 lantern point lights (KHR_lights_punctual,
+           rescaled by fix-gltf-lights); this hemisphere fill just lifts the shadows
+           so nothing reads pure black. -->
+      <a-entity light="type: hemisphere; color: #ffd9a8; groundColor: #2a2418; intensity: 0.3"></a-entity>
+
+      <a-entity gltf-model="#model" position="0 0 0" fix-gltf-lights></a-entity>
 
       <!-- Invisible teleport target covering the garden footprint. Keep visible:true (opacity 0)
            so the raycaster still hits it. Centered on the garden, radius covers the walls. -->
