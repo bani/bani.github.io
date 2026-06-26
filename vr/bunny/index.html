@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Bunny — 3D / AR Viewer</title>
+    <script type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+    <style>
+      html,body{margin:0;height:100%}
+      body{
+        background:radial-gradient(120% 120% at 50% 22%,#3a3550,#1d1b29 60%,#101019);
+        overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+      model-viewer{
+        width:100vw;height:100vh;
+        --progress-bar-color:#8fd9d0;
+      }
+      #ar{
+        background:#ffffff;color:#1d1b29;border:none;border-radius:999px;
+        padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer;
+        position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
+        box-shadow:0 6px 20px rgba(0,0,0,.35);
+      }
+      #ar:not([data-ar]){display:none;}
+    </style>
+  </head>
+  <body>
+    <model-viewer
+      src="bunny_viewer.glb"
+      alt="A small metallic bunny figurine holding a flower, on a round base"
+      camera-controls
+      touch-action="none"
+      auto-rotate auto-rotate-delay="800" rotation-per-second="20deg"
+      interaction-prompt="none"
+      environment-image="studio_env.hdr"
+      exposure="1.0"
+      shadow-intensity="0.9" shadow-softness="0.85"
+      camera-orbit="-22deg 78deg auto"
+      min-camera-orbit="auto auto 50%"
+      max-camera-orbit="auto auto 200%"
+      ar ar-modes="webxr scene-viewer quick-look">
+      <button id="ar" slot="ar-button">View in your space</button>
+    </model-viewer>
+    <script type="module">
+      const mv = document.querySelector('model-viewer');
+      const btn = document.getElementById('ar');
+      // only show the AR button on devices that can actually do AR
+      mv.addEventListener('load', () => {
+        if (mv.canActivateAR) btn.setAttribute('data-ar','');
+      });
+    </script>
+  </body>
+</html>

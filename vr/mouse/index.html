@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Mouse — 3D / AR Viewer</title>
+    <script type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+    <style>
+      html,body{margin:0;height:100%}
+      body{
+        background:radial-gradient(120% 120% at 50% 20%,#39435a,#1c2230 60%,#10141d);
+        overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+      model-viewer{width:100vw;height:100vh;--progress-bar-color:#7fb4e6}
+      #ar{
+        background:#fff;color:#1c2230;border:none;border-radius:999px;
+        padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer;
+        position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
+        box-shadow:0 6px 20px rgba(0,0,0,.35);
+      }
+      #ar:not([data-ar]){display:none;}
+    </style>
+  </head>
+  <body>
+    <model-viewer
+      src="mouse_viewer.glb"
+      alt="A cartoon mouse in a coat holding a potted flower"
+      camera-controls
+      touch-action="none"
+      auto-rotate auto-rotate-delay="800" rotation-per-second="20deg"
+      interaction-prompt="none"
+      environment-image="studio_env.hdr"
+      exposure="1.0"
+      shadow-intensity="0.9" shadow-softness="0.85"
+      camera-orbit="-20deg 82deg auto"
+      min-camera-orbit="auto auto 50%"
+      max-camera-orbit="auto auto 200%"
+      ar ar-modes="webxr scene-viewer quick-look">
+      <button id="ar" slot="ar-button">View in your space</button>
+    </model-viewer>
+    <script type="module">
+      const mv = document.querySelector('model-viewer');
+      const btn = document.getElementById('ar');
+      mv.addEventListener('load', () => { if (mv.canActivateAR) btn.setAttribute('data-ar',''); });
+    </script>
+  </body>
+</html>
