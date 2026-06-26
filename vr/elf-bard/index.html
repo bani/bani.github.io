@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Elf Bard — 3D Viewer</title>
+    <script type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+    <style>
+      html,body{margin:0;height:100%}
+      body{background:radial-gradient(120% 120% at 50% 18%,#2a1c4d,#150e2b 55%,#0a0714);overflow:hidden}
+      model-viewer{width:100vw;height:100vh;--progress-bar-color:#d9a441}
+      .hint{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+        font:500 13px/1.4 system-ui,sans-serif;color:#cdbff0;opacity:.7;
+        pointer-events:none;text-align:center}
+      button[slot="ar-button"]{position:absolute;top:16px;right:16px;
+        background:#d9a441;color:#1a1206;border:0;border-radius:10px;
+        padding:10px 16px;font:600 14px system-ui,sans-serif;cursor:pointer}
+    </style>
+  </head>
+  <body>
+    <model-viewer
+      src="elf-bard.glb"
+      alt="A bronze elf bard figurine"
+      camera-controls
+      touch-action="none"
+      auto-rotate auto-rotate-delay="600" rotation-per-second="16deg"
+      interaction-prompt="none"
+      environment-image="studio_env.hdr"
+      exposure="1.05"
+      shadow-intensity="0.9" shadow-softness="0.85"
+      camera-orbit="-28deg 78deg auto"
+      min-camera-orbit="auto auto 60%"
+      max-camera-orbit="auto auto 200%"
+      ar ar-modes="webxr scene-viewer quick-look">
+      <button slot="ar-button">View in your space</button>
+    </model-viewer>
+    <div class="hint">Drag to rotate &middot; scroll / pinch to zoom &middot; tap “View in your space” on a phone for AR</div>
+  </body>
+</html>
