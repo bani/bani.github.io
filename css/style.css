@@ -132,7 +132,8 @@ main {
   text-decoration: none;
 }
 
-.social-link svg {
+.social-link svg,
+.btn-resume svg {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
@@ -161,7 +162,7 @@ main {
 .btn-resume {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.45rem;
   padding: 0.45rem 0.9rem;
   background: var(--surface);
   border: 1px solid var(--border);
