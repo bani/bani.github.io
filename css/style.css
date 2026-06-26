@@ -105,6 +105,7 @@ main {
 .social-links {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.6rem;
   margin-bottom: 1.5rem;
 }
@@ -131,30 +132,15 @@ main {
   text-decoration: none;
 }
 
-.social-link svg,
-.discord-handle svg {
+.social-link svg {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
 }
 
-.discord-handle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.45rem 0.9rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 9999px;
-  color: var(--text);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: default;
-  user-select: text;
-}
-
 .btn-email {
   display: inline-block;
+  margin-bottom: 0.9rem;
   padding: 0.65rem 1.6rem;
   background: #734d8b;
   color: #fff;
@@ -164,7 +150,6 @@ main {
   font-size: 0.9rem;
   transition: background 0.15s;
   text-decoration: none;
-  margin-bottom: 1rem;
 }
 
 .btn-email:hover {
@@ -177,14 +162,22 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  color: var(--text-muted);
+  padding: 0.45rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  color: var(--text);
   font-size: 0.875rem;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .btn-resume:hover {
-  color: var(--accent);
+  background: var(--surface-alt);
+  border-color: var(--accent);
+  color: var(--text);
+  text-decoration: none;
 }
 
 /* --- Projects --- */
