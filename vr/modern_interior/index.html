@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Modern Interior — WebXR Walkthrough</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-8WRXGV06E1');
+    </script>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+
+    <!-- Rescale the lamp lights that survived the glTF export. Blender exports light energy
+         in physical photometric units (candela), which three.js renders literally and blows
+         out. Only the two table-lamp point lights came through; the room's real illumination
+         was an HDR-strength world environment, which glTF does not carry — rebuilt below. -->
+    <script>
+    AFRAME.registerComponent('fix-gltf-lights', {
+      schema: { sun: { default: 3.0 }, pointScale: { default: 0.0035 } },
+      init: function () {
+        var self = this;
+        this.el.addEventListener('model-loaded', function (e) {
+          var n = 0;
+          e.detail.model.traverse(function (o) {
+            if (!o.isLight) return; n++;
+            if (o.isDirectionalLight) { o.intensity = self.data.sun; }
+            else if (o.isPointLight || o.isSpotLight) { o.intensity *= self.data.pointScale; o.castShadow = false; }
+          });
+          console.log('[fix-gltf-lights] rescaled ' + n + ' imported lights');
+        });
+      }
+    });
+
+    // Fix spurious transparency. Force effectively-opaque materials back to opaque and strip
+    // small transmission values that read as glass, while leaving REAL glass and genuine
+    // alpha-masked cutouts (the potted plant / tree leaves) alone.
+    AFRAME.registerComponent('fix-materials', {
+      init: function () {
+        this.el.addEventListener('model-loaded', function (e) {
+          var seen = new Set(), fixed = 0;
+          e.detail.model.traverse(function (o) {
+            if (!o.isMesh || !o.material) return;
+            var mats = Array.isArray(o.material) ? o.material : [o.material];
+            mats.forEach(function (m) {
+              if (!m || seen.has(m.uuid)) return; seen.add(m.uuid);
+              // Strip partial transmission (real glass is ~1.0; the plant leaves came in at 0.21).
+              if (typeof m.transmission === 'number' && m.transmission > 0 && m.transmission < 0.9) {
+                m.transmission = 0;
+              }
+              var isGlass = (typeof m.transmission === 'number' && m.transmission >= 0.9);
+              // Effectively opaque but flagged transparent, and NOT an alpha-masked cutout
+              // (the leaf textures keep their alphaMap) -> make it a true solid.
+              if (!isGlass && m.transparent && m.opacity >= 0.98 && !m.alphaMap) {
+                m.transparent = false;
+                m.depthWrite = true;
+                fixed++;
+              }
+              m.needsUpdate = true;
+            });
+          });
+          console.log('[fix-materials] forced ' + fixed + ' materials opaque');
+        });
+      }
+    });
+
+    // Daytime gradient sky (seen through the floor-to-ceiling windows).
+    AFRAME.registerComponent('gradient-sky', {
+      schema: {
+        top:    { type: 'color', default: '#9cc1ec' },
+        middle: { type: 'color', default: '#cfe1f2' },
+        bottom: { type: 'color', default: '#eef1ec' },
+        midPoint: { default: 0.5 },
+        exponent: { default: 0.9 },
+        radius:   { default: 600 }
+      },
+      init: function () {
+        var d = this.data;
+        var uniforms = {
+          topColor: { value: new THREE.Color(d.top) },
+          midColor: { value: new THREE.Color(d.middle) },
+          botColor: { value: new THREE.Color(d.bottom) },
+          midPoint: { value: d.midPoint },
+          exponent: { value: d.exponent }
+        };
+        var mat = new THREE.ShaderMaterial({
+          side: THREE.BackSide, depthWrite: false, fog: false, toneMapped: false, uniforms: uniforms,
+          vertexShader: 'varying vec3 vPos; void main(){ vPos = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+          fragmentShader: [
+            'uniform vec3 topColor; uniform vec3 midColor; uniform vec3 botColor;',
+            'uniform float midPoint; uniform float exponent; varying vec3 vPos;',
+            'void main(){',
+            '  float h = clamp(vPos.y * 0.5 + 0.5, 0.0, 1.0);',
+            '  vec3 col;',
+            '  if (h < midPoint) { col = mix(botColor, midColor, pow(h / midPoint, exponent)); }',
+            '  else { col = mix(midColor, topColor, pow((h - midPoint) / (1.0 - midPoint), exponent)); }',
+            '  gl_FragColor = vec4(col, 1.0);',
+            '}'
+          ].join('\n')
+        });
+        var mesh = new THREE.Mesh(new THREE.SphereGeometry(d.radius, 32, 16), mat);
+        mesh.frustumCulled = false;
+        this.el.setObject3D('mesh', mesh);
+      },
+      remove: function () { this.el.removeObject3D('mesh'); }
+    });
+
+    // On-screen joystick for phones (inert on desktop / in VR).
+    AFRAME.registerComponent('touch-move', {
+      schema: { speed: { default: 2.0 }, cameraEl: { type: 'selector', default: '#camera' } },
+      init: function () {
+        this.vec = { x: 0, y: 0 }; this.dragging = false;
+        this._fwd = new THREE.Vector3(); this._right = new THREE.Vector3(); this._q = new THREE.Quaternion();
+        if (!(('ontouchstart' in window) || navigator.maxTouchPoints > 0)) return;
+        var base = document.createElement('div'); base.className = 'tm-joy-base';
+        var thumb = document.createElement('div'); thumb.className = 'tm-joy-thumb';
+        base.appendChild(thumb); document.body.appendChild(base); this.base = base;
+        var self = this, radius = 55;
+        function setFromTouch(t) {
+          var r = base.getBoundingClientRect();
+          var dx = t.clientX - (r.left + r.width / 2), dy = t.clientY - (r.top + r.height / 2);
+          var c = Math.min(Math.hypot(dx, dy), radius), a = Math.atan2(dy, dx);
+          var tx = Math.cos(a) * c, ty = Math.sin(a) * c;
+          thumb.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
+          self.vec.x = tx / radius; self.vec.y = -ty / radius;
+        }
+        function reset() { self.dragging = false; self.vec.x = 0; self.vec.y = 0; thumb.style.transform = 'translate(0,0)'; }
+        base.addEventListener('touchstart', function (e) { self.dragging = true; setFromTouch(e.changedTouches[0]); e.preventDefault(); e.stopPropagation(); }, { passive: false });
+        base.addEventListener('touchmove', function (e) { if (self.dragging) { setFromTouch(e.changedTouches[0]); e.preventDefault(); e.stopPropagation(); } }, { passive: false });
+        base.addEventListener('touchend', function (e) { reset(); e.preventDefault(); e.stopPropagation(); }, { passive: false });
+        base.addEventListener('touchcancel', reset, { passive: false });
+        this.el.sceneEl.addEventListener('enter-vr', function () { base.style.display = 'none'; });
+        this.el.sceneEl.addEventListener('exit-vr', function () { base.style.display = 'flex'; });
+      },
+      tick: function (time, dt) {
+        if (!this.dragging || (this.vec.x === 0 && this.vec.y === 0)) return;
+        var cam = this.data.cameraEl; if (!cam) return;
+        cam.object3D.getWorldQuaternion(this._q);
+        this._fwd.set(0, 0, -1).applyQuaternion(this._q); this._fwd.y = 0; this._fwd.normalize();
+        this._right.set(1, 0, 0).applyQuaternion(this._q); this._right.y = 0; this._right.normalize();
+        var d = this.data.speed * (dt / 1000), p = this.el.object3D.position;
+        p.addScaledVector(this._fwd, this.vec.y * d); p.addScaledVector(this._right, this.vec.x * d);
+      },
+      remove: function () { if (this.base && this.base.parentNode) this.base.parentNode.removeChild(this.base); }
+    });
+    </script>
+
+    <style>
+      html,body{margin:0;height:100%;background:#cfe1f2}
+      #help{position:fixed;left:12px;bottom:12px;z-index:9999;max-width:340px;padding:12px 14px;
+        border-radius:10px;background:rgba(20,28,38,.72);color:#eef3f8;
+        font:13px/1.5 system-ui,sans-serif;border:1px solid rgba(120,160,200,.35);
+        backdrop-filter:blur(6px);pointer-events:none}
+      .tm-joy-base { position: fixed; left: 22px; bottom: 22px; width: 120px; height: 120px;
+        border-radius: 50%; z-index: 10000; background: rgba(20,28,38,.4);
+        border: 2px solid rgba(120,160,200,.5); display: flex; align-items: center;
+        justify-content: center; touch-action: none; user-select: none; -webkit-user-select: none; }
+      .tm-joy-thumb { width: 54px; height: 54px; border-radius: 50%;
+        background: rgba(120,180,240,.75); box-shadow: 0 0 14px rgba(120,180,240,.6); pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <div id="help">Desktop: WASD + drag to look. Phone: drag the joystick to walk, drag the screen to look. VR: Enter VR, point at the floor, pull the trigger to teleport.</div>
+
+    <a-scene
+      background="color: #cfe1f2"
+      fog="type: exponential; color: #dfe7ef; density: 0.005"
+      renderer="colorManagement: true; toneMapping: ACESFilmic; exposure: 1.0; antialias: true; sortTransparentObjects: true"
+      gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/v1/decoders/"
+      loading-screen="backgroundColor: #cfe1f2; dotsColor: #3a6ea5">
+
+      <a-assets>
+        <a-asset-item id="model" src="model.glb"></a-asset-item>
+      </a-assets>
+
+      <!-- Daytime sky behind the windows. -->
+      <a-entity gradient-sky></a-entity>
+
+      <!-- The room was lit by a bright world environment (and the lamp lights), which glTF
+           does not carry, so we rebuild a daylight rig here. Light pours in from the window
+           wall (A-Frame -Z). Adding our own lights also disables A-Frame's flat defaults. -->
+      <a-entity light="type: hemisphere; color: #fff6ec; groundColor: #6f6675; intensity: 2.2"></a-entity>
+      <a-entity light="type: directional; color: #fff2e2; intensity: 1.6; castShadow: false"
+                position="-2 6 -4"></a-entity>
+      <a-entity light="type: ambient; color: #dcd9e6; intensity: 0.3"></a-entity>
+
+      <a-entity gltf-model="#model" position="0 0 0" fix-gltf-lights fix-materials></a-entity>
+
+      <!-- Invisible teleport target over the floor. Keep visible:true (opacity 0) so the
+           raycaster hits it. Centered on the room footprint (floor spans ~x[-2.2,2.2] z[-3.5,3.5]). -->
+      <a-circle class="teleport-floor" radius="3.2" rotation="-90 0 0" position="0 0.02 0"
+                material="shader: flat; opacity: 0; transparent: true"></a-circle>
+
+      <!-- Spawn: inside the room near the back wall at A-Frame (1.2, 0, 2.8), eye height 1.6.
+           Yaw is aimed at the room centre (0,0,0): direction (-1.2,-2.8) -> +23° about Y. -->
+      <a-entity id="rig" position="1.2 0 2.8" rotation="0 23 0" touch-move="speed: 2.0">
+        <a-entity id="camera" camera position="0 1.6 0"
+                  look-controls="pointerLockEnabled: false"
+                  wasd-controls="acceleration: 22; fly: false"></a-entity>
+        <a-entity laser-controls="hand: left"  raycaster="objects: .teleport-floor; far: 20"
+                  blink-controls="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleport-floor"></a-entity>
+        <a-entity laser-controls="hand: right" raycaster="objects: .teleport-floor; far: 20"
+                  blink-controls="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleport-floor"></a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
