@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les Jardins de Perséphone · Blender · VRChat</title>
+  <meta name="description" content="A 100 × 250 m French formal garden retelling the myth of Persephone, built procedurally in Blender with an AI-assisted pipeline and exported to VRChat through a custom atlas-and-merge toolchain.">
+  <meta name="author" content="Vanessa Sabino">
+
+  <link rel="shortcut icon" href="../../favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-8WRXGV06E1');
+  </script>
+</head>
+
+<body>
+
+  <main>
+    <div class="container">
+
+      <a href="../../" class="back-link">← Work &amp; Projects</a>
+
+      <div class="project-page">
+
+        <header class="project-header">
+          <div class="project-tags">
+            <span class="project-tag">Blender</span>
+            <span class="project-tag">Procedural</span>
+            <span class="project-tag">Unity</span>
+            <span class="project-tag">VRChat</span>
+          </div>
+          <h1 class="project-title">Les Jardins de Perséphone</h1>
+          <p class="project-year">2026</p>
+        </header>
+
+        <div class="project-hero">
+          <img src="hero.png" alt="Reflecting pool of Greek garden" width="1920" height="1080">
+        </div>
+
+        <div class="project-body">
+          <div class="project-description">
+            <p>Les Jardins de Perséphone is a 100 × 250 metre French formal garden built as a VRChat world, and a retelling of the Persephone myth in landscape form. Six themed sections line a central gravel axis: a grand entrance parterre, a rose garden threaded with pergolas, a marble gazebo rotunda flanked by four fountains, a Greek peristyle court with a reflecting pool, a topiary garden, and a shaded tree allée. The myth plays out across the east–west axis: everything west belongs to Demeter and spring (a pomegranate grove, a wheat field, beehives, a rope swing) while everything east belongs to the underworld, where a stone labyrinth traced from a SVG leads to the basin of Lethe, past a ruined folly, a moon gate, and drifting spirit wisps. At the entrance, a marble shrine of Demeter faces the Chasm, a rusticated grotto where the earth opened, so visitors walk into the story as they enter the world.</p>
+            <p>Like my other worlds, the garden was built procedurally with Claude and the Blender MCP, but at a much larger scale: every builder lives in a shared Python library, and each area of the garden is an idempotent "orchestrator" function that can tear itself down and rebuild from constants, so the whole scene stays regenerable rather than accumulating unrepeatable hand edits. Trees are grown with the Sapling Tree Gen add-on and then ortho-baked into crossed-quad impostors, which brought the raw scene down from 33 million triangles to about 2.5 million while keeping a high level of detail look. Flower beds are geometry-node scatters with per-section colour schemes, and the soft furnishings in the gazebo lounge were done with cloth simulations. Hidden through it all is a scavenger hunt of nine tiny frogs generated with Hunyuan from a text prompt.</p>
+            <p>Getting a scene this size into Unity became a project of its own: a custom export pipeline in the same library folds more than fifty flat materials into a single palette atlas plus a gradient atlas for the flower petals, reprojects UVs in world metres, merges hundreds of objects into per-section chunks, and generates colliders and VRChat station markers. Along the way it runs automated repair passes for the failure modes that only show up under Unity's backface culling, like inside-out lathe geometry and mixed-winding islands. The export ships as two FBX files, one large static mesh and one small file with just the benches and pickups, so iterating on interactive components only ever re-imports a few megabytes. The finished world runs at full detail on Quest under a moonlit skybox.</p>
+          </div>
+          <aside class="project-meta">
+            <div class="meta-item">
+              <p class="meta-label">WebXR</p>
+              <p class="meta-value"><a href="../../vr/garden/" target="_blank" rel="noopener">View in WebXR ↗</a></p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">VRChat World</p>
+              <p class="meta-value"><a href="https://vrchat.com/home/launch?worldId=wrld_bd42056a-7018-4449-a82d-ada1af307b0c" target="_blank" rel="noopener">Visit in VRChat ↗</a></p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Tools</p>
+              <p class="meta-value">Blender, Hunyuan 3D, Unity, VRChat SDK</p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Type</p>
+              <p class="meta-value">VRChat World</p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Scale</p>
+              <p class="meta-value">100 × 250 m, ~2.5M triangles</p>
+            </div>
+            <div class="meta-item">
+              <p class="meta-label">Year</p>
+              <p class="meta-value">2026</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="project-gallery">
+          <img src="detail-1.png" alt="Entrance with exedra and rock grove" width="800" height="600">
+          <img src="detail-2.png" alt="Underworld labyrinth and moongate" width="800" height="600">
+          <img src="detail-3.png" alt="Demeter's garden with swing" width="800" height="600">
+          <img src="detail-4.png" alt="Picnic area" width="800" height="600">
+          <img src="detail-5.png" alt="Meditation circle with incense" width="800" height="600">
+          <img src="detail-6.png" alt="Reflecting pool overlooking gazebo" width="800" height="600">
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; <script>document.write(new Date().getFullYear())</script> Vanessa Sabino</p>
+    </div>
+  </footer>
+
+</body>
+</html>
