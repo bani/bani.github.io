@@ -149,13 +149,14 @@
       <a-plane class="teleport-floor" width="102" height="252" rotation="-90 0 0" position="0 0.02 0"
                material="shader: flat; opacity: 0; transparent: true"></a-plane>
 
-      <!-- Spawn: Blender (0, 123, eye) = the north entrance plaza, facing south
-           down the 240 m axis (entrance arch -> parterre -> gazebo). Blender +Y
-           maps to A-Frame -Z, so that's position Z = -123 with the rig yawed 180°
-           (camera default forward is -Z = Blender north; we want south).
-           rig.y = 0.9 lifts the eye to ~2.5 m for an elevated tour view on
-           desktop/mobile; VR teleports reset the rig to the floor. -->
-      <a-entity id="rig" position="0 0.9 -123" rotation="0 180 0" touch-move="speed: 2.6">
+      <!-- Spawn: inside the central gazebo, Blender (0, 0), standing on the
+           gazebo floor (top at z 0.56) and facing south down the 240 m axis
+           toward the peristyle colonnade & reflecting pool. Blender +Y maps to
+           A-Frame -Z, so gazebo centre = position (0, _, 0); rig yawed 180°
+           faces south (camera default forward -Z = Blender north).
+           rig.y = 0.56 sets the feet on the gazebo floor (eye ~2.16 m); VR
+           teleports reset the rig to the teleport floor. -->
+      <a-entity id="rig" position="0 0.56 0" rotation="0 180 0" touch-move="speed: 2.6">
         <a-entity id="camera" camera="far: 800" position="0 1.6 0"
                   look-controls="pointerLockEnabled: false"
                   wasd-controls="acceleration: 28; fly: false"></a-entity>
