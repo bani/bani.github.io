@@ -195,6 +195,21 @@ main {
   color: var(--text);
 }
 
+.project-group + .project-group {
+  margin-top: 3rem;
+}
+
+.group-heading {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
 .coming-soon {
   display: inline-block;
   padding: 1.5rem 2.5rem;
