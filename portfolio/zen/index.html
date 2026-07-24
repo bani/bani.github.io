@@ -47,9 +47,9 @@
 
         <div class="project-body">
           <div class="project-description">
-            <p>Garden of Stillness is a walled Japanese Zen garden built as a VRChat world. Inside the perimeter you'll find a small temple with a curved tiled roof, a dry garden with raked sand, a koi pond crossed by an arched wooden bridge, stone lanterns, and various trees.</p>
-            <p>The whole scene was built procedurally with Claude rather than hand-modelled piece by piece. Every surface, from the wood and stone to the sand, moss, water and foliage, comes from textures generated with Python scripts in Blender's node system instead of photographic sources. That meant designing each material as a small generator: control over tiling, scale, colour and wear was baked into the script itself, and the same generators could be re-run to retexture the whole garden in a different mood without touching a single UV.</p>
-            <p>Performance stayed Quest-friendly throughout: the detailed version lands at roughly 113,000 triangles, normal maps were downscaled to 512 pixels with no visible loss, and the shoji paper uses baked emission rather than a translucency shader so the lit-from-within glow works identically on PC and Quest.</p>
+            <p>A walled Japanese Zen garden built as a VRChat world, with a temple, a dry garden of raked sand, a koi pond crossed by an arched wooden bridge, stone lanterns, and trees.</p>
+            <p>The scene was built procedurally with Claude rather than hand-modelled piece by piece. Every surface, from wood and stone to sand, moss, water, and foliage, comes from textures generated with Python scripts in Blender's node system instead of photographic sources. Each material was written as a generator, with tiling, scale, colour, and wear controlled in the script itself, so re-running the scripts retextures the whole garden without touching a single UV.</p>
+            <p>Performance stayed Quest-friendly throughout: the detailed version is roughly 113,000 triangles, normal maps were downscaled to 512 px with no visible loss, and the shoji paper uses baked emission rather than a translucency shader, so the glow renders identically on PC and Quest.</p>
           </div>
           <aside class="project-meta">
             <div class="meta-item">
