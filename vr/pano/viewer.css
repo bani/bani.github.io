@@ -1,0 +1,111 @@
+/* Shared styling for the equirectangular panorama viewer.
+   Kept in the same visual language as the WebXR walkthrough pages. */
+
+html, body { margin: 0; height: 100%; background: #10161f; overflow: hidden; }
+
+/* --- Loading overlay ---------------------------------------------------- */
+
+#pano-loading {
+  /* Longhand rather than `inset`, which only reached Safari in 14.1. */
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 10001;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; background: #10161f; color: #eef3f8;
+  font: 14px/1.5 system-ui, -apple-system, sans-serif;
+  transition: opacity .6s ease;
+}
+#pano-loading.is-hidden { opacity: 0; pointer-events: none; }
+#pano-loading .pano-title {
+  font-size: 15px; letter-spacing: .08em; text-transform: uppercase;
+  color: #9fb6cd; margin: 0;
+}
+#pano-loading .pano-spinner {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 2px solid rgba(120, 160, 200, .25);
+  border-top-color: #6ba8e0;
+  animation: pano-spin 900ms linear infinite;
+}
+@keyframes pano-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  #pano-loading .pano-spinner { animation-duration: 2.4s; }
+}
+#pano-loading .pano-error { max-width: 320px; text-align: center; color: #f0b8b8; }
+
+/* Small pill that reports the full-resolution upgrade happening behind the preview. */
+#pano-status {
+  position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 9999;
+  padding: 7px 14px; border-radius: 999px;
+  background: rgba(20, 28, 38, .72); color: #cfe0f0;
+  border: 1px solid rgba(120, 160, 200, .35);
+  font: 12px/1 system-ui, -apple-system, sans-serif;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  pointer-events: none; opacity: 0; transition: opacity .35s ease;
+}
+#pano-status.is-visible { opacity: 1; }
+
+/* --- Persistent chrome -------------------------------------------------- */
+
+#help {
+  position: fixed; left: 12px; bottom: 12px; z-index: 9999; max-width: 340px;
+  padding: 12px 14px; border-radius: 10px;
+  background: rgba(20, 28, 38, .72); color: #eef3f8;
+  font: 13px/1.5 system-ui, -apple-system, sans-serif;
+  border: 1px solid rgba(120, 160, 200, .35);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  pointer-events: none; transition: opacity .5s ease;
+}
+#help.is-faded { opacity: 0; }
+
+#pano-back {
+  position: fixed; left: 14px; top: 14px; z-index: 9999;
+  padding: 8px 14px; border-radius: 999px;
+  background: rgba(20, 28, 38, .72); color: #dce8f4; text-decoration: none;
+  border: 1px solid rgba(120, 160, 200, .35);
+  font: 13px/1 system-ui, -apple-system, sans-serif;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+#pano-back:hover { background: rgba(30, 42, 58, .85); color: #fff; }
+
+/* --- Viewpoint switcher (only rendered when a scene has 2+ views) -------- */
+
+#pano-views {
+  position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 9999;
+  display: flex; gap: 6px; padding: 6px; border-radius: 999px;
+  background: rgba(20, 28, 38, .72);
+  border: 1px solid rgba(120, 160, 200, .35);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+#pano-views button {
+  -webkit-appearance: none; appearance: none; border: 0; cursor: pointer;
+  padding: 8px 16px; border-radius: 999px;
+  background: transparent; color: #b9cbdd;
+  font: 13px/1 system-ui, -apple-system, sans-serif;
+  white-space: nowrap;
+  transition: background .2s ease, color .2s ease;
+}
+#pano-views button:hover { color: #fff; background: rgba(120, 180, 240, .18); }
+#pano-views button[aria-current="true"] { background: rgba(120, 180, 240, .75); color: #0d1520; }
+
+/* iOS 13+ only reports device orientation after an explicit user gesture. */
+#pano-motion {
+  position: fixed; right: 14px; bottom: 90px; z-index: 9999; display: none;
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+  padding: 10px 16px; border-radius: 999px;
+  background: rgba(20, 28, 38, .8); color: #dce8f4;
+  border: 1px solid rgba(120, 160, 200, .45);
+  font: 13px/1 system-ui, -apple-system, sans-serif;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+#pano-motion.is-visible { display: block; }
+
+/* On a phone the bottom edge gets crowded: the A-Frame VR button sits bottom-right and
+   the switcher is centred there. Move the help text to the top instead of stacking
+   everything in the same strip, which is what made it collide with the switcher. */
+@media (max-width: 600px) {
+  #help {
+    top: 64px; right: 12px; bottom: auto; max-width: none; font-size: 12px;
+  }
+  #pano-views {
+    bottom: 76px; max-width: calc(100vw - 24px); overflow-x: auto;
+  }
+  #pano-motion { bottom: 140px; }
+}

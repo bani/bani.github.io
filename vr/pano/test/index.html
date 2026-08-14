@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Panorama Viewer Test Grid</title>
+
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+
+    <!-- A reference panorama for checking the viewer without a finished render.
+         Two views, so the switcher and the cross-fade get exercised too. -->
+    <script>
+      window.PANO_CONFIG = {
+        views: [
+          {
+            id: 'grid',
+            label: 'Grid, yaw 0',
+            src: 'test-pano.jpg',
+            width: 4096,
+            srcLow: 'test-pano-4k.jpg',
+            preview: 'test-pano-preview.jpg',
+            yaw: 0
+          },
+          {
+            id: 'grid90',
+            label: 'Grid, yaw 90',
+            src: 'test-pano.jpg',
+            width: 4096,
+            srcLow: 'test-pano-4k.jpg',
+            preview: 'test-pano-preview.jpg',
+            yaw: 90
+          }
+        ]
+      };
+    </script>
+    <link rel="stylesheet" href="../viewer.css" />
+    <script src="../viewer.js"></script>
+  </head>
+  <body>
+    <div id="pano-loading">
+      <p class="pano-title">Viewer test grid</p>
+      <div class="pano-spinner"></div>
+    </div>
+    <div id="pano-status"></div>
+
+    <div id="help">
+      With yaw 0 you should be facing the red "0 FRONT" marker, with "90 RIGHT" to your
+      right. The horizon should sit at eye level, "UP / ZENITH" straight overhead, and the
+      colour swatches should look saturated rather than washed out.
+    </div>
+    <div id="pano-views" style="display:none"></div>
+    <button type="button" id="pano-motion">Enable motion</button>
+
+    <a-scene
+      background="color: #10161f"
+      renderer="colorManagement: true; toneMapping: no; antialias: true"
+      loading-screen="enabled: false"
+      pano-zoom>
+
+      <a-entity pano-sky></a-entity>
+
+      <a-entity id="camera" camera position="0 0 0"
+                look-controls="pointerLockEnabled: false; reverseMouseDrag: true; reverseTouchDrag: true"
+                wasd-controls="enabled: false"></a-entity>
+    </a-scene>
+  </body>
+</html>
