@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>House Interior: 360° Panorama</title>
+    <meta name="description" content="A 360° panorama of the House Interior scene, rendered in Blender Cycles." />
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-8WRXGV06E1');
+    </script>
+
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+
+    <!-- Scene configuration. Add entries to `views` to get a viewpoint switcher.
+         Render settings in Blender: Camera > Lens > Panoramic > Equirectangular
+         (Cycles only), with the default 360x180 degree extents, at 8192x4096.
+
+         yaw 270 opens the page facing the middle column of the equirectangular image,
+         which is where the Blender camera was pointing. Add to it to turn the starting
+         view right; ?yaw=<deg> in the URL overrides it while you find the value. -->
+    <script>
+      window.PANO_CONFIG = {
+        backHref: '../../portfolio/interior_fullplan/',
+        views: [
+          {
+            id: 'house',
+            label: 'House',
+            src: 'pano.jpg',
+            width: 8192,
+            srcLow: 'pano-4k.jpg',
+            preview: 'pano-preview.jpg',
+            yaw: 270
+          }
+        ]
+      };
+    </script>
+    <link rel="stylesheet" href="../pano/viewer.css" />
+    <script src="../pano/viewer.js"></script>
+  </head>
+  <body>
+    <div id="pano-loading">
+      <p class="pano-title">House Interior</p>
+      <div class="pano-spinner"></div>
+    </div>
+    <div id="pano-status"></div>
+
+    <a href="../../portfolio/interior_fullplan/" id="pano-back">← Back to project</a>
+    <div id="help">Drag to look around. Scroll or pinch to zoom. On a phone, move your device to look. In a headset, press Enter VR.</div>
+    <div id="pano-views" style="display:none"></div>
+    <button type="button" id="pano-motion">Enable motion</button>
+
+    <a-scene
+      background="color: #10161f"
+      renderer="colorManagement: true; toneMapping: no; antialias: true"
+      loading-screen="enabled: false"
+      pano-zoom>
+
+      <a-entity pano-sky></a-entity>
+
+      <!-- The camera sits at the centre of the panorama sphere and never moves.
+           Flip reverseMouseDrag/reverseTouchDrag to false for first-person style
+           dragging instead of the grab-the-image feel. -->
+      <a-entity id="camera" camera position="0 0 0"
+                look-controls="pointerLockEnabled: false; reverseMouseDrag: true; reverseTouchDrag: true"
+                wasd-controls="enabled: false"></a-entity>
+    </a-scene>
+  </body>
+</html>
