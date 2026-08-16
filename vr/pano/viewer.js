@@ -496,7 +496,16 @@
       hitEl.addEventListener('click', function () {
         // Outside VR the button is hidden but the ray can still reach it if the visitor
         // drags the view far enough down, and exiting a session we are not in is noise.
-        if (self.el.is('vr-mode')) { self.el.exitVR(); }
+        if (!self.el.is('vr-mode')) { return; }
+        // This click is dispatched by the cursor component's fuse, which resolves
+        // inside the same tick the WebXR session drives - so we are still inside that
+        // frame's callback right now. Ending the session synchronously from within its
+        // own frame callback is what left Quest Browser stuck on its Home loading
+        // screen instead of handing back to the 2D tab. Deferring one macrotask lets
+        // the current frame finish and present before end() runs.
+        setTimeout(function () {
+          if (self.el.is('vr-mode')) { self.el.exitVR(); }
+        }, 0);
       });
 
       this.onEnter = function () { self.setActive(true); };
