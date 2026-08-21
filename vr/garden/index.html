@@ -15,6 +15,7 @@
     </script>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+    <script src="../shared/vr-exit.js"></script>
 
     <!-- Sunset gradient sky: a back-side sphere with a 3-stop vertical gradient.
          toneMapped:false keeps the colors vivid no matter the renderer exposure. -->
@@ -114,11 +115,13 @@
       .tm-joy-thumb { width: 54px; height: 54px; border-radius: 50%;
         background: rgba(255,196,120,.75); box-shadow: 0 0 14px rgba(255,180,90,.6); pointer-events: none; }
     </style>
+    <link rel="stylesheet" href="../shared/vr-ui.css" />
   </head>
   <body>
+    <a href="../../portfolio/garden/" class="vr-back">← Back to project</a>
     <div id="help">Desktop: WASD + drag to look. Phone: drag the joystick to walk, drag the screen to look. VR: Enter VR, point at the ground, pull the trigger to teleport. Nine frogs are hiding in the garden — can you spot them?</div>
 
-    <!-- model.glb is Draco-compressed (KHR_draco_mesh_compression) + WebP textures;
+    <!-- garden.glb is Draco-compressed (KHR_draco_mesh_compression) + WebP textures;
          gltf-model on the scene tells three.js where to fetch the decoder WASM. -->
     <a-scene
       background="color: #1b2a5e"
@@ -128,7 +131,7 @@
       loading-screen="backgroundColor: #1b2a5e; dotsColor: #ffae5c">
 
       <a-assets timeout="60000">
-        <a-asset-item id="model" src="model.glb"></a-asset-item>
+        <a-asset-item id="model" src="garden.glb"></a-asset-item>
       </a-assets>
 
       <!-- Sunset gradient skydome (indigo zenith -> rose -> warm horizon). -->

@@ -65,7 +65,7 @@ the renders are ready. Once a scene's panorama is in place and checked:
 1. `git mv vr/<scene>/pano.html vr/<scene>/index.html`
 2. Update the portfolio link in `portfolio/<scene>/index.html`, which currently reads
    "View in WebXR".
-3. Decide what to do with `vr/<scene>/model.glb` (64 MB for the kitchen, 13 MB for the
+3. Decide what to do with `vr/<scene>/<scene>.glb` (64 MB for the kitchen, 13 MB for the
    modern interior). Deleting it does not shrink the repository, since the blobs stay
    in git history.
 

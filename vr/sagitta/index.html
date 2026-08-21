@@ -19,6 +19,7 @@
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <!-- VR teleport locomotion (blink-style) -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+    <script src="../shared/vr-exit.js"></script>
 
     <!-- Self-contained on-screen joystick for mobile/touch walking (no external deps).
          Moves the rig relative to where the camera is looking. Registered before the
@@ -133,8 +134,10 @@
         pointer-events: none;
       }
     </style>
+    <link rel="stylesheet" href="../shared/vr-ui.css" />
   </head>
   <body>
+    <a href="../../portfolio/space-station/" class="vr-back">← Back to project</a>
     <div id="help">
       <b>Sagitta Station</b><br />
       Desktop: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move, drag mouse to look.<br />
@@ -151,7 +154,7 @@
       loading-screen="backgroundColor: #0a0714; dotsColor: #57e6d8">
 
       <a-assets>
-        <a-asset-item id="station" src="model.glb"></a-asset-item>
+        <a-asset-item id="station" src="sagitta.glb"></a-asset-item>
       </a-assets>
 
       <!-- The exported model already contains its 49 point lights + emissive neon.

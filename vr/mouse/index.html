@@ -70,9 +70,11 @@
         box-shadow: 0 6px 20px rgba(0,0,0,.4); display: none;
       }
     </style>
+    <link rel="stylesheet" href="../shared/vr-ui.css" />
   </head>
 
   <body>
+    <a href="../../portfolio/mouse/" class="vr-back">← Back to project</a>
     <div id="title">Mouse<small>drag to rotate</small></div>
 
     <div class="btn-row">
@@ -82,7 +84,7 @@
 
     <model-viewer
       id="mv"
-      src="mouse_viewer.glb"
+      src="mouse.glb"
       alt="A cartoon mouse in a coat holding a potted flower"
       camera-controls
       touch-action="pan-y"

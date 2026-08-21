@@ -5,7 +5,7 @@ Orbit, zoom, and pan on desktop or mobile; launch AR on a phone.
 
 ## Files
 - `index.html` — the viewer page.
-- `mouse_viewer.glb` — the character (Draco-compressed, ~7 MB, ~578k tris). Vertex colors and
+- `mouse.glb` — the character (Draco-compressed, ~7 MB, ~578k tris). Vertex colors and
   the glass eyes (`KHR_materials_transmission`) are baked in.
 - `studio_env.hdr` — a 1K soft studio environment used for lighting. The Blender scene had no
   HDR world (it was lit by lamps, which don't export to glTF), so this neutral map provides
@@ -38,6 +38,6 @@ python3 -m http.server 8000
 ```
 
 ## Deploy to GitHub Pages
-1. Commit `index.html`, `mouse_viewer.glb`, `studio_env.hdr`, and `.nojekyll` to `main`.
+1. Commit `index.html`, `mouse.glb`, `studio_env.hdr`, and `.nojekyll` to `main`.
 2. **Settings → Pages:** Source = *Deploy from a branch*, Branch = `main`, folder = `/ (root)`. Save.
 3. Visit `https://<user>.github.io/<repo>/nomad/mouse-viewer/` (AR needs the HTTPS Pages provides).

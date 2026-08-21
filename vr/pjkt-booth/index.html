@@ -15,6 +15,7 @@
     </script>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+    <script src="../shared/vr-exit.js"></script>
 
     <!-- Rescale glTF lights (Blender exports physical lux/candela -> would white-out) -->
     <script>
@@ -133,8 +134,10 @@
       .tm-joy-thumb { width: 54px; height: 54px; border-radius: 50%;
         background: rgba(87,180,230,.7); box-shadow: 0 0 14px rgba(87,180,230,.6); pointer-events: none; }
     </style>
+    <link rel="stylesheet" href="../shared/vr-ui.css" />
   </head>
   <body>
+    <a href="../../portfolio/pjkt-booth/" class="vr-back">← Back to project</a>
     <div id="help">Desktop: WASD + drag to look. Phone: drag to look, joystick to move. VR: Enter VR, point at floor, pull trigger to teleport.</div>
     <a-scene
       background="color: #05080f"
@@ -143,7 +146,7 @@
       loading-screen="backgroundColor: #05080f; dotsColor: #57b4e6">
 
       <a-assets>
-        <a-asset-item id="model" src="model.glb"></a-asset-item>
+        <a-asset-item id="model" src="pjkt-booth.glb"></a-asset-item>
       </a-assets>
 
       <a-entity gradient-sky></a-entity>

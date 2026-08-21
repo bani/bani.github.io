@@ -1,0 +1,27 @@
+/* Chrome shared by every page under vr/.
+ *
+ * Loaded alongside each page's own <style> block, so it must not assume a palette:
+ * these rules sit on top of a 360 render, a lit walkthrough and a dark product
+ * viewer alike, which is why the pill is a neutral translucent slate rather than
+ * anything drawn from a scene.
+ *
+ * The .vr-back rule started as #pano-back in pano/viewer.css and moved here when the
+ * walkthroughs and object viewers needed the same link. Top-left is the one corner
+ * free on all three kinds of page: walkthroughs put their help text and joystick
+ * bottom-left, the object viewers put buttons top-right.
+ */
+
+.vr-back {
+  position: fixed; left: 14px; top: 14px; z-index: 9999;
+  padding: 8px 14px; border-radius: 999px;
+  background: rgba(20, 28, 38, .72); color: #dce8f4; text-decoration: none;
+  border: 1px solid rgba(120, 160, 200, .35);
+  font: 13px/1 system-ui, -apple-system, sans-serif;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+
+.vr-back:hover { background: rgba(30, 42, 58, .85); color: #fff; }
+
+/* None of the page chrome survives entering an immersive session, so the link is
+ * meaningless there and the in-scene exit panel takes over. See shared/vr-exit.js. */
+.a-enter-vr-modal ~ .vr-back { display: none; }
