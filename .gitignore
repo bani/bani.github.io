@@ -5,3 +5,4 @@
 *.meta
 .sass-cache
 .claude/
+tools/
