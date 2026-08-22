@@ -253,8 +253,14 @@ main {
   transition: transform 0.5s ease;
 }
 
-.project-card:hover .card-img img {
+.project-card:hover .card-img img,
+.project-card:focus-visible .card-img img {
   transform: scale(1.04);
+}
+
+.project-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .card-placeholder {
@@ -280,7 +286,8 @@ main {
   transition: background 0.25s ease;
 }
 
-.project-card:hover .card-overlay {
+.project-card:hover .card-overlay,
+.project-card:focus-visible .card-overlay {
   background: linear-gradient(to top, rgba(20,10,4,0.92) 0%, rgba(20,10,4,0.25) 60%, transparent 100%);
 }
 
@@ -648,4 +655,79 @@ footer {
   .lightbox-image {
     width: min(800px, calc(100vw - 6.5rem), calc((100vh - 10rem) * 4 / 3));
   }
+}
+
+/* --- Focus visibility --- */
+
+/* Keyboard users get a ring on everything interactive; project cards, gallery
+   thumbnails and the lightbox define their own rings above. */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.btn-email:focus-visible,
+.social-link:focus-visible,
+.btn-resume:focus-visible {
+  outline-offset: 4px;
+}
+
+/* --- Reduced motion --- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .project-card:hover .card-img img,
+  .project-card:focus-visible .card-img img,
+  .gallery-item:hover img,
+  .gallery-item:focus-visible img {
+    transform: none;
+  }
+}
+
+/* --- Error page --- */
+
+.error-page {
+  padding: 6rem 0 8rem;
+  max-width: 34rem;
+}
+
+.error-code {
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.5;
+}
+
+.error-page h1 {
+  margin: 0.5rem 0 1rem;
+}
+
+.error-text {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.error-secondary {
+  font-size: 0.9rem;
 }

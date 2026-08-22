@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# The 3D and WebXR viewers are reached from their project pages, which carry
+# the written context. They are not search entry points on their own.
+Disallow: /vr/
+
+# Resumes are handed out deliberately, not found through search.
+Disallow: /resume-vanessasabino.pdf
+Disallow: /resume-vanessasabino-ds.pdf
+
+# Machine-facing Banter world bundles, not pages.
+Disallow: /alt/
+# Superseded 2011 version of the site, kept only for old inbound links.
+Disallow: /v1/
+
+Sitemap: https://baniverso.com/sitemap.xml
