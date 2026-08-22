@@ -454,6 +454,138 @@ main {
   object-fit: cover;
 }
 
+.gallery-item {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  cursor: zoom-in;
+  font: inherit;
+  overflow: hidden;
+}
+
+.gallery-item img {
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img,
+.gallery-item:focus-visible img {
+  transform: scale(1.04);
+}
+
+.gallery-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* --- Lightbox --- */
+
+body.lightbox-open {
+  overflow: hidden;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  background: rgba(28, 20, 14, 0.92);
+}
+
+.lightbox[hidden] {
+  display: none;
+}
+
+.lightbox-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Capped at the 800x600 detail size, then scaled down by whichever of the
+   viewport's dimensions runs out first, always keeping the 4:3 ratio. */
+.lightbox-image {
+  display: block;
+  width: min(800px, calc(100vw - 9rem), calc((100vh - 10rem) * 4 / 3));
+  height: auto;
+  aspect-ratio: 4/3;
+  border-radius: 8px;
+}
+
+.lightbox-caption {
+  max-width: 800px;
+  color: var(--surface);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.lightbox-counter {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1.25rem;
+  text-align: center;
+  color: var(--surface);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.lightbox-nav,
+.lightbox-close {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(250, 248, 245, 0.12);
+  color: var(--surface);
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  transition: background 0.2s ease;
+}
+
+.lightbox-nav {
+  width: 3rem;
+  height: 3rem;
+  font-size: 2rem;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.75rem;
+}
+
+.lightbox-nav:hover,
+.lightbox-close:hover {
+  background: rgba(250, 248, 245, 0.28);
+}
+
+.lightbox-nav:focus-visible,
+.lightbox-close:focus-visible {
+  outline: 2px solid var(--surface);
+  outline-offset: 2px;
+}
+
+.lightbox-nav[hidden],
+.lightbox-counter[hidden] {
+  display: none;
+}
+
 /* --- Footer --- */
 
 footer {
@@ -500,5 +632,20 @@ footer {
 
   .project-gallery {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lightbox {
+    padding: 1rem;
+    gap: 0.25rem;
+  }
+
+  .lightbox-nav {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.5rem;
+  }
+
+  .lightbox-image {
+    width: min(800px, calc(100vw - 6.5rem), calc((100vh - 10rem) * 4 / 3));
   }
 }
