@@ -661,12 +661,13 @@ footer {
 
 /* Keyboard users get a ring on everything interactive; project cards, gallery
    thumbnails and the lightbox define their own rings above. */
+/* No border-radius here: the outline already follows each element's own
+   radius, and setting one reshapes round buttons while they hold focus. */
 a:focus-visible,
 button:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 4px;
 }
 
 .btn-email:focus-visible,
