@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Lakeside Lounge: WebXR Walkthrough</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-8WRXGV06E1');
+    </script>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+    <script src="../shared/vr-exit.js"></script>
+
+    <!-- Blender exports light energy in physical photometric units (the sun becomes
+         hundreds of lux, the four accent lamps thousands of candela). three.js renders
+         those literally, and ACES tone-mapping then clips the room to white. Rescale
+         the five imported lights (1 sun + 4 point) to sane real-time values. -->
+    <script>
+    AFRAME.registerComponent('fix-gltf-lights', {
+      schema: { sun: { default: 3.0 }, pointScale: { default: 0.004 } },
+      init: function () {
+        var self = this;
+        this.el.addEventListener('model-loaded', function (e) {
+          var n = 0;
+          e.detail.model.traverse(function (o) {
+            if (!o.isLight) return; n++;
+            if (o.isDirectionalLight) { o.intensity = self.data.sun; }
+            else if (o.isPointLight || o.isSpotLight) { o.intensity *= self.data.pointScale; o.castShadow = false; }
+          });
+          console.log('[fix-gltf-lights] rescaled ' + n + ' imported lights');
+        });
+      }
+    });
+    </script>
+
+    <!-- Loads the sunset panorama as a real equirectangular environment (scene.background
+         AND scene.environment), not just a backdrop mesh. The room's glass walls are
+         KHR_materials_transmission (real refraction, roughness 0.02): without an actual
+         environment texture to sample, three.js has nothing to refract and the glass
+         renders solid black, no matter how bright the scene is. -->
+    <script>
+    AFRAME.registerComponent('photo-environment', {
+      schema: { src: { type: 'asset' }, rotation: { default: 90 } },
+      init: function () {
+        var scene = this.el.sceneEl.object3D;
+        var renderer = this.el.sceneEl.renderer;
+        new THREE.TextureLoader().load(this.data.src, function (tex) {
+          tex.mapping = THREE.EquirectangularReflectionMapping;
+          tex.colorSpace = THREE.SRGBColorSpace;
+          scene.background = tex;
+          scene.environment = tex;
+          scene.backgroundRotation = new THREE.Euler(0, THREE.MathUtils.degToRad(90), 0);
+          scene.environmentRotation = scene.backgroundRotation;
+        });
+      }
+    });
+    </script>
+
+    <!-- On-screen joystick for phones (inert on desktop / in VR). Registers before the scene parses. -->
+    <script>
+    AFRAME.registerComponent('touch-move', {
+      schema: { speed: { default: 2.4 }, cameraEl: { type: 'selector', default: '#camera' } },
+      init: function () {
+        this.vec = { x: 0, y: 0 }; this.dragging = false;
+        this._fwd = new THREE.Vector3(); this._right = new THREE.Vector3(); this._q = new THREE.Quaternion();
+        if (!(('ontouchstart' in window) || navigator.maxTouchPoints > 0)) return; // desktop keeps WASD
+        var base = document.createElement('div'); base.className = 'tm-joy-base';
+        var thumb = document.createElement('div'); thumb.className = 'tm-joy-thumb';
+        base.appendChild(thumb); document.body.appendChild(base); this.base = base;
+        var self = this, radius = 55;
+        function setFromTouch(t) {
+          var r = base.getBoundingClientRect();
+          var dx = t.clientX - (r.left + r.width / 2), dy = t.clientY - (r.top + r.height / 2);
+          var c = Math.min(Math.hypot(dx, dy), radius), a = Math.atan2(dy, dx);
+          var tx = Math.cos(a) * c, ty = Math.sin(a) * c;
+          thumb.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
+          self.vec.x = tx / radius; self.vec.y = -ty / radius;
+        }
+        function reset() { self.dragging = false; self.vec.x = 0; self.vec.y = 0; thumb.style.transform = 'translate(0,0)'; }
+        base.addEventListener('touchstart', function (e) { self.dragging = true; setFromTouch(e.changedTouches[0]); e.preventDefault(); e.stopPropagation(); }, { passive: false });
+        base.addEventListener('touchmove', function (e) { if (self.dragging) { setFromTouch(e.changedTouches[0]); e.preventDefault(); e.stopPropagation(); } }, { passive: false });
+        base.addEventListener('touchend', function (e) { reset(); e.preventDefault(); e.stopPropagation(); }, { passive: false });
+        base.addEventListener('touchcancel', reset, { passive: false });
+        this.el.sceneEl.addEventListener('enter-vr', function () { base.style.display = 'none'; });
+        this.el.sceneEl.addEventListener('exit-vr', function () { base.style.display = 'flex'; });
+      },
+      tick: function (time, dt) {
+        if (!this.dragging || (this.vec.x === 0 && this.vec.y === 0)) return;
+        var cam = this.data.cameraEl; if (!cam) return;
+        cam.object3D.getWorldQuaternion(this._q);
+        this._fwd.set(0, 0, -1).applyQuaternion(this._q); this._fwd.y = 0; this._fwd.normalize();
+        this._right.set(1, 0, 0).applyQuaternion(this._q); this._right.y = 0; this._right.normalize();
+        var d = this.data.speed * (dt / 1000), p = this.el.object3D.position;
+        p.addScaledVector(this._fwd, this.vec.y * d); p.addScaledVector(this._right, this.vec.x * d);
+      },
+      remove: function () { if (this.base && this.base.parentNode) this.base.parentNode.removeChild(this.base); }
+    });
+    </script>
+
+    <style>
+      html,body{margin:0;height:100%;background:#0e1a24}
+      #help{position:fixed;left:12px;bottom:12px;z-index:9999;max-width:340px;padding:12px 14px;
+        border-radius:10px;background:rgba(20,24,26,.72);color:#e8e2da;
+        font:13px/1.5 system-ui,sans-serif;border:1px solid rgba(140,106,63,.4);
+        backdrop-filter:blur(6px);pointer-events:none}
+      .tm-joy-base { position: fixed; left: 22px; bottom: 22px; width: 120px; height: 120px;
+        border-radius: 50%; z-index: 10000; background: rgba(20,24,26,.45);
+        border: 2px solid rgba(140,106,63,.5); display: flex; align-items: center;
+        justify-content: center; touch-action: none; user-select: none; -webkit-user-select: none; }
+      .tm-joy-thumb { width: 54px; height: 54px; border-radius: 50%;
+        background: rgba(255,196,120,.75); box-shadow: 0 0 14px rgba(255,180,90,.6); pointer-events: none; }
+    </style>
+    <link rel="stylesheet" href="../shared/vr-ui.css" />
+  </head>
+  <body>
+    <a href="../../portfolio/lakeside-lounge/" class="vr-back">← Back to project</a>
+    <div id="help">Desktop: WASD + drag to look. Phone: drag the joystick to walk, drag the screen to look. VR: Enter VR, point at the floor, pull the trigger to teleport.</div>
+
+    <a-scene
+      background="color: #0e1a24"
+      fog="type: exponential; color: #d99a72; density: 0.003"
+      renderer="colorManagement: true; toneMapping: ACESFilmic; exposure: 1.0; antialias: true; sortTransparentObjects: true"
+      loading-screen="backgroundColor: #0e1a24; dotsColor: #ffb870">
+
+      <a-assets timeout="60000">
+        <a-asset-item id="model" src="lakeside-lounge.glb"></a-asset-item>
+      </a-assets>
+
+      <!-- The real sunset-over-the-glacial-lake panorama, rendered in Blender (Cycles,
+           AgX view transform, the same -1 EV the VRChat build ships) and baked to a flat
+           4096x2048 JPEG. Far cheaper and far more faithful than a procedural sky, since
+           the studio's own glass walls are meant to frame this exact view -- and loading
+           it as a real environment (not just a backdrop mesh) is what lets the glass and
+           the reflecting pool actually refract/reflect it instead of rendering black. -->
+      <a-entity photo-environment="src: pano.jpg"></a-entity>
+
+      <!-- The GLB carries its own Sun + 4 accent-lamp point lights (KHR_lights_punctual,
+           rescaled by fix-gltf-lights below). This hemisphere just lifts the shadows so
+           the blackened-steel piles and the felt practice area never read pure black. -->
+      <a-entity light="type: hemisphere; color: #ffd9b0; groundColor: #362f45; intensity: 0.3"></a-entity>
+
+      <a-entity gltf-model="#model" position="0 0 0" fix-gltf-lights></a-entity>
+
+      <!-- Invisible teleport target covering the studio's plinth footprint (Blender
+           X ±14 / Y ±20 -> A-Frame X ±14 / Z ∓20). Keep visible (opacity 0) so the
+           raycaster still hits it. -->
+      <a-plane class="teleport-floor" width="30" height="42" rotation="-90 0 0" position="0 0.02 0"
+               material="shader: flat; opacity: 0; transparent: true"></a-plane>
+
+      <!-- Spawn: the render camera sat at Blender (0, 0, 1.6) -> A-Frame (0, 1.6, 0),
+           dead centre of the room on the practice floor. Its forward was Blender -X,
+           which maps to A-Frame -X; the camera's default forward is -Z, so the rig
+           is yawed 90 deg to face it, looking out through the west glass toward the lake. -->
+      <a-entity id="rig" position="0 0 0" rotation="0 90 0" touch-move="speed: 2.4">
+        <a-entity id="camera" camera="far: 400" position="0 1.6 0"
+                  look-controls="pointerLockEnabled: false"
+                  wasd-controls="acceleration: 24; fly: false"></a-entity>
+        <a-entity laser-controls="hand: left"  raycaster="objects: .teleport-floor; far: 30"
+                  blink-controls="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleport-floor"></a-entity>
+        <a-entity laser-controls="hand: right" raycaster="objects: .teleport-floor; far: 30"
+                  blink-controls="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleport-floor"></a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
