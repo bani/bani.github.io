@@ -18,7 +18,7 @@
   <meta property="og:image" content="https://baniverso.com/portfolio/garden/hero.jpg">
   <meta property="og:image:width" content="1920">
   <meta property="og:image:height" content="1080">
-  <meta property="og:image:alt" content="Reflecting pool of Greek garden">
+  <meta property="og:image:alt" content="Moonlit reflecting pool with water lilies, framed by a stone colonnade and a freestanding arch in a formal garden">
 
   <link rel="shortcut icon" href="../../favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
@@ -54,13 +54,13 @@
         </header>
 
         <div class="project-hero">
-          <img src="hero.jpg" alt="Reflecting pool of Greek garden" width="1920" height="1080" fetchpriority="high" decoding="async">
+          <img src="hero.jpg" alt="Moonlit reflecting pool with water lilies, framed by a stone colonnade and a freestanding arch in a formal garden" width="1920" height="1080" fetchpriority="high" decoding="async">
         </div>
 
         <div class="project-body">
           <div class="project-description">
             <p>A 100 × 250 metre French formal garden built as a VRChat world, structured as a retelling of the Persephone myth. Six themed sections line a central axis, with a spring garden to the west and an underworld to the east, so visitors move through the story as they explore the space.</p>
-            <p>The garden was built procedurally in Blender using Claude and the Blender MCP, at a much larger scale than my other worlds. Every builder lives in a shared Python library, and each area is an idempotent function that rebuilds itself from constants, keeping the whole scene regenerable rather than accumulating manual edits. Trees were grown with the Sapling Tree Gen add-on and ortho-baked into crossed-quad impostors, cutting the raw scene from 33 million triangles to about 2.5 million while holding the level of detail. Flower beds are geometry-node scatters with per-section colour schemes.</p>
+            <p>The garden was built procedurally in Blender using Claude and the Blender MCP, and is by far the largest world in this portfolio. Every builder lives in a shared Python library, and each area is an idempotent function that rebuilds itself from constants, keeping the whole scene regenerable rather than accumulating manual edits. Trees were grown with the Sapling Tree Gen add-on and ortho-baked into crossed-quad impostors, cutting the raw scene from 33 million triangles to about 2.5 million while holding the level of detail. Flower beds are geometry-node scatters with per-section colour schemes.</p>
             <p>Getting a scene this size into Unity required a custom export pipeline in the same library. It folds more than fifty flat materials into a single palette atlas, reprojects UVs in world metres, merges hundreds of objects into per-section chunks, and generates colliders and VRChat station markers. Automated repair passes fix failure modes that only appear under Unity's backface culling, such as inside-out lathe geometry and mixed-winding islands. The export ships as two FBX files, separating the large static mesh from the interactive props, so iterating on components re-imports only a few megabytes. The finished world runs at full detail on Quest.</p>
           </div>
           <aside class="project-meta">
@@ -74,7 +74,7 @@
             </div>
             <div class="meta-item">
               <p class="meta-label">Tools</p>
-              <p class="meta-value">Blender, Hunyuan 3D, Unity, VRChat SDK</p>
+              <p class="meta-value">Blender, Python, Hunyuan 3D, Unity, VRChat SDK</p>
             </div>
             <div class="meta-item">
               <p class="meta-label">Type</p>
@@ -91,7 +91,7 @@
           </aside>
         </div>
 
-        <div class="project-gallery" data-cover="cover.jpg" data-cover-alt="Reflecting pool of Greek garden">
+        <div class="project-gallery" data-cover="cover.jpg" data-cover-alt="Moonlit reflecting pool beside a stone colonnade in a formal garden">
           <img src="detail-1.jpg" alt="Entrance with exedra and rock grove" width="800" height="600" loading="lazy" decoding="async">
           <img src="detail-2.jpg" alt="Underworld labyrinth and moongate" width="800" height="600" loading="lazy" decoding="async">
           <img src="detail-3.jpg" alt="Demeter's garden with swing" width="800" height="600" loading="lazy" decoding="async">
