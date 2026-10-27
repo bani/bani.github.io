@@ -30,6 +30,25 @@
             font-size: inherit;
         }
 
+        .length {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .length input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .length span {
+            margin-right: 6px;
+        }
+
+        .length span:last-child {
+            margin-right: 0;
+        }
+
         .info {
             font-size: 0.82em;
         }
@@ -84,12 +103,15 @@
             <p>Convert feet and inches to millimetres at drawing scale</p>
         </div>
         <div class="row">
-            <div class="column column-20"><label for="ft">Feet</label></div>
-            <div class="column column-80"><input type="text" id="ft" inputmode="decimal" autocomplete="off" placeholder="0" autofocus></div>
-        </div>
-        <div class="row">
-            <div class="column column-20"><label for="in">Inches</label></div>
-            <div class="column column-80"><input type="text" id="in" inputmode="decimal" autocomplete="off" placeholder="6, 6.5 or 6 1/2"></div>
+            <div class="column column-20"><label for="ft">Length</label></div>
+            <div class="column column-80">
+                <div class="length">
+                    <input type="text" id="ft" inputmode="decimal" autocomplete="off" placeholder="0" autofocus
+                        aria-label="Feet"><span>′</span>
+                    <input type="text" id="in" inputmode="decimal" autocomplete="off" placeholder="6 1/2"
+                        aria-label="Inches"><span>″</span>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="column column-20"><label for="scale">Scale</label></div>
