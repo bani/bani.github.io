@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+
+    <!-- CSS Reset -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+
+    <!-- Milligram CSS -->
+    <link rel="stylesheet" href="../css/milligram.css">
+    <link rel="stylesheet" href="../css/dark.css" />
+
+    <title>Scale Converter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Convert feet and inches to millimetres at an architectural drawing scale.">
+    <style>
+        html {
+            margin: 0 auto;
+            max-width: 400px;
+            margin-top: 25px;
+        }
+
+        label {
+            display: inline;
+            font-weight: inherit;
+            font-size: inherit;
+        }
+
+        .info {
+            font-size: 0.82em;
+        }
+
+        .result {
+            font-weight: bold;
+            font-size: 2em;
+            color: #b364e3;
+            display: table;
+            margin: 0 auto;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .result small {
+            font-size: 0.5em;
+            font-weight: 300;
+            color: #f2f2f2;
+        }
+
+        .sub {
+            display: table;
+            margin: 0 auto;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .err {
+            color: #ff8a80;
+            min-height: 1.4em;
+        }
+
+        .linebreak {
+            height: 5px;
+        }
+    </style>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-8WRXGV06E1');
+    </script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <p>Convert feet and inches to millimetres at drawing scale</p>
+        </div>
+        <div class="row">
+            <div class="column column-20"><label for="ft">Feet</label></div>
+            <div class="column column-80"><input type="text" id="ft" inputmode="decimal" autocomplete="off" placeholder="0" autofocus></div>
+        </div>
+        <div class="row">
+            <div class="column column-20"><label for="in">Inches</label></div>
+            <div class="column column-80"><input type="text" id="in" inputmode="decimal" autocomplete="off" placeholder="6, 6.5 or 6 1/2"></div>
+        </div>
+        <div class="row">
+            <div class="column column-20"><label for="scale">Scale</label></div>
+            <div class="column column-80"><select id="scale"></select></div>
+        </div>
+
+        <div class="row">
+            <div class="column"><span class="info err" id="err"></span></div>
+        </div>
+        <div class="row">
+            <div class="column"><span class="info">Length on paper:</span></div>
+        </div>
+        <div class="row">
+            <div class="column"><span id="out" class="result">0 <small>mm</small></span></div>
+        </div>
+        <div class="row">
+            <p class="linebreak"></p>
+        </div>
+        <div class="row">
+            <div class="column"><span id="sub" class="info sub"></span></div>
+        </div>
+    </div>
+
+</body>
+<script>
+    // Each scale: paper inches representing 1'-0" (12" = 1:1).
+    const SCALES = [
+        ["3/16″ = 1′-0″", 3 / 16],
+        ["1/16″ = 1′-0″", 1 / 16],
+        ["3/32″ = 1′-0″", 3 / 32],
+        ["1/8″ = 1′-0″", 1 / 8],
+        ["1/4″ = 1′-0″", 1 / 4],
+        ["3/8″ = 1′-0″", 3 / 8],
+        ["1/2″ = 1′-0″", 1 / 2],
+        ["3/4″ = 1′-0″", 3 / 4],
+        ["1″ = 1′-0″", 1],
+        ["1 1/2″ = 1′-0″", 1.5],
+        ["3″ = 1′-0″", 3],
+        ["1:1 (full size)", 12],
+    ];
+    const MM_PER_INCH = 25.4;
+
+    const $ = id => document.getElementById(id);
+    SCALES.forEach(([label, v]) => $("scale").add(new Option(label, v)));  // first = 3/16″, the default
+
+    // Accepts "6", "6.5", "1/2", "6 1/2", "6-1/2"; empty = 0; returns NaN if invalid.
+    function parse(s) {
+        s = s.trim().replace(/[″"′']/g, "");
+        if (!s) return 0;
+        let m = s.match(/^(-?\d+(?:\.\d+)?)$/);
+        if (m) return parseFloat(m[1]);
+        m = s.match(/^(?:(-?\d+)[\s-]+)?(\d+)\/(\d+)$/);
+        if (m && +m[3] !== 0) {
+            const whole = m[1] ? parseInt(m[1], 10) : 0;
+            const frac = +m[2] / +m[3];
+            return whole < 0 || /^-/.test(m[1] || "") ? whole - frac : whole + frac;
+        }
+        return NaN;
+    }
+
+    const fmt = (n, d = 2) => n.toLocaleString("en-US", { maximumFractionDigits: d });
+
+    function update() {
+        const ft = parse($("ft").value), inch = parse($("in").value);
+        if (isNaN(ft) || isNaN(inch)) {
+            $("err").textContent = "Enter numbers (inches may be a fraction like 6 1/2).";
+            return;
+        }
+        $("err").textContent = "";
+        const paperPerFoot = parseFloat($("scale").value);   // paper inches per real foot
+        const ratio = paperPerFoot / 12;                      // paper length / real length
+        const realIn = ft * 12 + inch;
+        const realMm = realIn * MM_PER_INCH;
+        const drawnMm = realMm * ratio;
+        $("out").innerHTML = fmt(drawnMm) + " <small>mm</small>";
+        $("sub").textContent = `Full size: ${fmt(realMm, 1)} mm (${fmt(realIn, 3)}″) · ratio 1:${fmt(1 / ratio, 2)}`;
+    }
+
+    ["ft", "in", "scale"].forEach(id => $(id).addEventListener("input", update));
+    update();
+</script>
+
+</html>
