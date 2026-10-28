@@ -108,7 +108,7 @@
                 <div class="length">
                     <input type="text" id="ft" inputmode="decimal" autocomplete="off" placeholder="0" autofocus
                         aria-label="Feet"><span>′</span>
-                    <input type="text" id="in" inputmode="decimal" autocomplete="off" placeholder="6 1/2"
+                    <input type="text" id="in" inputmode="decimal" autocomplete="off" placeholder="0"
                         aria-label="Inches"><span>″</span>
                 </div>
             </div>
@@ -191,6 +191,11 @@
     }
 
     ["ft", "in", "scale"].forEach(id => $(id).addEventListener("input", update));
+    // Clear feet/inches on focus so a new value can be typed straight away.
+    ["ft", "in"].forEach(id => $(id).addEventListener("focus", e => {
+        e.target.value = "";
+        update();
+    }));
     update();
 </script>
 
