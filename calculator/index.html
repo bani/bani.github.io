@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+
+    <!-- CSS Reset -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+
+    <!-- Milligram CSS -->
+    <link rel="stylesheet" href="../css/milligram.css">
+    <link rel="stylesheet" href="../css/dark.css" />
+
+    <title>Feet and Inches Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Add and subtract lengths in feet and inches, with fractions.">
+    <style>
+        html {
+            margin: 0 auto;
+            max-width: 400px;
+            margin-top: 25px;
+        }
+
+        .length {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .length input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .length span {
+            margin-right: 6px;
+        }
+
+        .length .op {
+            width: 1em;
+            margin-right: 0;
+            text-align: center;
+            font-weight: bold;
+            color: #b364e3;
+        }
+
+        .length .remove {
+            width: 3.8rem;
+            padding: 0;
+            flex: none;
+            font-size: 1.6rem;
+            letter-spacing: 0;
+            color: #9b9ba5;
+        }
+
+        .length .remove:hover,
+        .length .remove:focus {
+            color: #ff8a80;
+        }
+
+        .length .remove.spacer {
+            visibility: hidden;
+        }
+
+        input.bad {
+            border-color: #ff8a80;
+        }
+
+        .ops {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ops button {
+            flex: 1;
+            padding: 0;
+            font-size: 2rem;
+            letter-spacing: 0;
+        }
+
+        .ops button.clear {
+            flex: none;
+            padding: 0 1.5rem;
+            font-size: 1.1rem;
+            letter-spacing: .1rem;
+        }
+
+        .info {
+            font-size: 0.82em;
+        }
+
+        .result {
+            font-weight: bold;
+            font-size: 2em;
+            color: #b364e3;
+            display: table;
+            margin: 0 auto;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .sub {
+            display: table;
+            margin: 0 auto;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .err {
+            color: #ff8a80;
+            min-height: 1.4em;
+        }
+
+        .linebreak {
+            height: 5px;
+        }
+    </style>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WRXGV06E1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-8WRXGV06E1');
+    </script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <p>Add and subtract lengths in feet and inches</p>
+        </div>
+        <div id="rows"></div>
+        <div class="row">
+            <div class="column">
+                <div class="ops">
+                    <button type="button" id="add" aria-label="Add a length">+</button>
+                    <button type="button" id="sub-btn" aria-label="Subtract a length">−</button>
+                    <button type="button" id="clear" class="button-outline clear">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="column"><span class="info err" id="err"></span></div>
+        </div>
+        <div class="row">
+            <div class="column"><span class="info">Total:</span></div>
+        </div>
+        <div class="row">
+            <div class="column"><span id="out" class="result">0″</span></div>
+        </div>
+        <div class="row">
+            <p class="linebreak"></p>
+        </div>
+        <div class="row">
+            <div class="column"><span id="sub" class="info sub"></span></div>
+        </div>
+    </div>
+
+</body>
+<script>
+    const MM_PER_INCH = 25.4;
+    const $ = id => document.getElementById(id);
+
+    // Accepts "6", "6.5", "1/2", "6 1/2", "6-1/2"; empty = 0; returns NaN if invalid.
+    function parse(s) {
+        s = s.trim().replace(/[″"′']/g, "");
+        if (!s) return 0;
+        let m = s.match(/^(-?\d+(?:\.\d+)?)$/);
+        if (m) return parseFloat(m[1]);
+        m = s.match(/^(?:(-?\d+)[\s-]+)?(\d+)\/(\d+)$/);
+        if (m && +m[3] !== 0) {
+            const whole = m[1] ? parseInt(m[1], 10) : 0;
+            const frac = +m[2] / +m[3];
+            return whole < 0 || /^-/.test(m[1] || "") ? whole - frac : whole + frac;
+        }
+        return NaN;
+    }
+
+    const fmt = (n, d = 2) => n.toLocaleString("en-US", { maximumFractionDigits: d });
+    const gcd = (a, b) => b ? gcd(b, a % b) : a;
+
+    // Total inches -> 12′-6 1/2″, rounded to the nearest 1/16″.
+    function feetInches(total) {
+        const n = Math.round(Math.abs(total) * 16);     // sixteenths
+        const exact = Math.abs(Math.abs(total) * 16 - n) < 1e-9;
+        const ft = Math.floor(n / 192);
+        const inch = Math.floor((n % 192) / 16);
+        const six = n % 16;
+        let inStr = String(inch);
+        if (six) {
+            const g = gcd(six, 16);
+            inStr = (inch || ft ? inch + " " : "") + `${six / g}/${16 / g}`;
+        }
+        let s = ft ? `${ft}′-${inStr}″` : `${inStr}″`;
+        if (n && total < 0) s = "−" + s;
+        return (exact ? "" : "≈ ") + s;
+    }
+
+    // One row: operator, feet, inches, remove button. The first row has no operator.
+    function addRow(op) {
+        const first = !$("rows").children.length;
+        const row = document.createElement("div");
+        row.className = "row";
+        row.dataset.op = op;
+        row.innerHTML = `
+            <div class="column">
+                <div class="length">
+                    <span class="op">${first ? "" : op === "-" ? "−" : "+"}</span>
+                    <input type="text" class="ft" inputmode="decimal" autocomplete="off" placeholder="0" aria-label="Feet"><span>′</span>
+                    <input type="text" class="in" inputmode="decimal" autocomplete="off" placeholder="0" aria-label="Inches"><span>″</span>
+                    <button type="button" class="remove button-clear${first ? " spacer" : ""}" aria-label="Remove this length"${first ? ' tabindex="-1"' : ""}>×</button>
+                </div>
+            </div>`;
+        $("rows").appendChild(row);
+        row.querySelector(".ft").focus();
+        update();
+    }
+
+    function update() {
+        let total = 0, bad = false;
+        for (const row of $("rows").children) {
+            const ftEl = row.querySelector(".ft"), inEl = row.querySelector(".in");
+            const ft = parse(ftEl.value), inch = parse(inEl.value);
+            ftEl.classList.toggle("bad", isNaN(ft));
+            inEl.classList.toggle("bad", isNaN(inch));
+            if (isNaN(ft) || isNaN(inch)) { bad = true; continue; }
+            total += (row.dataset.op === "-" ? -1 : 1) * (ft * 12 + inch);
+        }
+        if (bad) {
+            $("err").textContent = "Enter numbers (inches may be a fraction like 6 1/2).";
+            return;
+        }
+        $("err").textContent = "";
+        $("out").textContent = feetInches(total);
+        const neg = total < 0 ? "−" : "";
+        $("sub").textContent = `${neg}${fmt(Math.abs(total), 3)}″ · ${neg}${fmt(Math.abs(total) * MM_PER_INCH, 1)} mm`;
+    }
+
+    $("rows").addEventListener("input", update);
+    // Select the field's contents on focus so a new value can be typed straight away.
+    $("rows").addEventListener("focusin", e => {
+        if (e.target.tagName === "INPUT") setTimeout(() => e.target.select(), 0);
+    });
+    $("rows").addEventListener("click", e => {
+        const btn = e.target.closest(".remove");
+        if (!btn || btn.classList.contains("spacer")) return;
+        btn.closest(".row").remove();
+        update();
+    });
+    $("add").addEventListener("click", () => addRow("+"));
+    $("sub-btn").addEventListener("click", () => addRow("-"));
+    $("clear").addEventListener("click", () => {
+        $("rows").innerHTML = "";
+        addRow("+");
+    });
+
+    addRow("+");
+</script>
+
+</html>
