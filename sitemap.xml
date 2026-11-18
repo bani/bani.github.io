@@ -71,13 +71,23 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://baniverso.com/portfolio/space-station/</loc>
+    <loc>https://baniverso.com/portfolio/zen/</loc>
     <lastmod>2026-08-22</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://baniverso.com/portfolio/zen/</loc>
-    <lastmod>2026-08-22</lastmod>
+    <loc>https://baniverso.com/portfolio/nebula/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://baniverso.com/portfolio/natura/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://baniverso.com/portfolio/crystal/</loc>
+    <lastmod>2026-11-18</lastmod>
     <priority>0.8</priority>
   </url>
 </urlset>
